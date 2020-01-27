@@ -13,6 +13,8 @@ alias ls='ls -l --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 
 
-if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
-	startx
+if [ "$HOSTNAME" == "dreams" ]; then
+	if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
+		startx
+	fi
 fi
