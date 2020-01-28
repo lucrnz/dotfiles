@@ -7,10 +7,14 @@
 [ -f "$HOME/.Xdefaults" ] && xrdb -merge "$HOME/.Xdefaults"
 
 xsetroot -solid \#000000 -cursor_name top_left_arrow
-picom &
 nitrogen --restore &
 tint2&
-systemctl --user start dirmngr.service&
+
+if [ "$(hostname)" == "dreams" ]; then
+	picom&
+	systemctl --user start dirmngr.service&
+fi
+
 unclutter --timeout 1 &
 exec 2bwm
 
