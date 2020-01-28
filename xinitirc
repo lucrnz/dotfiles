@@ -1,0 +1,16 @@
+#!/bin/sh
+
+[ -f "/etc/X11/xinit/.Xresources" ] && xrdb -merge "/etc/X11/xinit/.Xresources"
+[ -f "/etc/X11/xinit/.Xmodmap" ] && xmodmap "/etc/X11/xinit/.Xmodmap"
+[ -f "$HOME/.Xmodmap" ] && xmodmap "$HOME/.Xmodmap"
+[ -f "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"
+[ -f "$HOME/.Xdefaults" ] && xrdb -merge "$HOME/.Xdefaults"
+
+xsetroot -solid \#000000 -cursor_name top_left_arrow
+picom &
+nitrogen --restore &
+tint2&
+systemctl --user start dirmngr.service&
+unclutter --timeout 1 &
+exec 2bwm
+
