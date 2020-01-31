@@ -1,0 +1,25 @@
+#!/bin/bash
+leave=0
+tmp_file="/tmp/$(gen_ucode).py"
+echo "#!/usr/bin/env python3" > $tmp_file
+
+while [ "$leave" == "0" ]; do
+	$EDITOR $tmp_file
+	chmod +x $tmp_file
+	$tmp_file
+	echo "Script returned code $?"
+	echo "	1) Edit & re-run"
+	echo "	2) Copy to clipboard & leave"
+	echo "	3) Just leave"
+	read o
+	if [ "$o" == "1" ]; then
+		leave=0
+	elif [ "$o" == "2" ]; then
+		cat $tmp_file | xsel -b
+		leave=1
+	elif [ "$o" == "3" ]; then
+		leave=1
+	fi
+done
+
+rm -v $tmp_file

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+while true; do
+
+python -m http.server -b 192.168.88.100 5757 --directory $HOME/pub_http
+
+sleep 1s;
+
+done

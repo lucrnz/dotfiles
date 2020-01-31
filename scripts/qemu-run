@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+#needs configobj
+#sudo pacman -S python-pip --needed && sudo pip install configobj
+
+import subprocess
+import os
+import sys
+from configobj import ConfigObj
+
+def get_disk_format(file_path):
+	out = subprocess.check_output(['qemu-img','info', file_path], universal_newlines=True).split()
+	prev_was_fmt=False
+	result = ""
+	for s in out:
+		if prev_was_fmt:
+			result = s
+			break
+		else:
+			if s == "format:":
+				prev_was_fmt = True
+	return result
+
+vm_dir=os.environ["HOME"]+"/VM/"+sys.argv[1]
+
+# Default config
+
+cfg = {}
+cfg["sys"] = "x64"
+cfg["ram"] = "2G"
+cfg["kvm"] = "yes"
+cfg["vga"] = "std"
+cfg["boot"] = "c"
+cfg["portfwd"] = ""
+
+# internal pls no use ty
+cfg["_display"] = "sdl,gl=on"
+cfg["_monitor"] = "stdio"
+
+if os.path.isfile(vm_dir + "/cdrom.iso"):
+	cfg["cdr"] = vm_dir + "/cdrom.iso"
+
+if os.path.isfile(vm_dir + "/disk.qcow2"):
+	cfg["hdd"] = vm_dir + "/disk.qcow2"
+
+#with open(vm_dir + "/cfg.json") as f:
+#    cfg_raw = f.read()
+#file_cfg=json.loads(cfg_raw)
+#for k, v in file_cfg.items():
+#	cfg[k] = v
+
+config = ConfigObj(vm_dir + "/config")
+
+CMD="SDL_VIDEO_X11_DGAMOUSE=0"
+
+if cfg["sys"] == "x32":
+	CMD += " qemu-system-i386"
+elif cfg["sys"] == "x64":
+	CMD += " qemu-system-x86_64"
+
+if cfg["kvm"] == "yes":
+	CMD += " --enable-kvm"
+
+CMD += " -m " + cfg["ram"]
+CMD += " -object rng-random,id=rng0,filename=/dev/urandom -device virtio-rng-pci,rng=rng0"
+CMD += " -usb -device usb-tablet"
+CMD += " -vga " + cfg["vga"] + " -display " + cfg["_display"] + " -monitor " + cfg["_monitor"]
+CMD += " -nic user" + cfg["port_fwd"]
+
+if os.path.isfile(cfg["hdd"]):
+	CMD += "-drive file=" + cfg["hdd"] + ",format=" + get_disk_format(cfg["hdd"])
+
+CMD += " -boot order=" + cfg["boot"]
+print(CMD)
+

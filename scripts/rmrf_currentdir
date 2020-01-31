@@ -1,0 +1,20 @@
+#!/bin/bash
+
+TARGETDIR="$(pwd)"
+
+read -p "Completely remove $TARGETDIR? [Y/n] " -n 1 -r
+echo # print new line
+
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+	echo "Operation cancelled by the user."
+    exit 1
+fi
+
+cd ..
+rm -rvf $TARGETDIR
+mkdir $TARGETDIR
+cd $TARGETDIR
+
+
+
