@@ -10,7 +10,7 @@ export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;33m\]@\[$(tput sgr0)\
 
 export EDITOR=$(which nano)
 
-alias ls='ls -l --color=auto'
+alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 
 

@@ -38,6 +38,9 @@ cfg["RandomDevice"] = "Yes"
 
 if os.path.isfile(vm_dir + "/cdrom.iso"):
 	cfg["CDRomISO"] = vm_dir + "/cdrom.iso"
+else:
+	cfg["CDRomISO"] = "No"
+
 if os.path.isfile(vm_dir + "/disk.qcow2"):
 	cfg["HardDisk"] = vm_dir + "/disk.qcow2"
 # End Default Config
