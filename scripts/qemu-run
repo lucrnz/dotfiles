@@ -103,10 +103,10 @@ else:	# Normal lookup using ENV var
 cfg = {}
 cfg["System"] = "x64"
 cfg["CpuType"] = "host"
-cfg["CpuCores"] = subprocess.check_output(["nproc"]) #TODO: Get cores using Python?
+cfg["CpuCores"] = subprocess.check_output(["nproc"])
 cfg["MemorySize"] = "2G"
 cfg["Acceleration"] = "Yes"
-cfg["DisplayDriver"] = "std"
+cfg["DisplayDriver"] = "virtio"
 cfg["SoundDriver"] = "hda"
 cfg["Boot"] = "c"
 cfg["ForwardPorts"] = "" #TODO
@@ -153,6 +153,7 @@ del telnet_port # I dont need this temp variable anymore
 
 # Start QEMU CMD Line
 qemu_cmd = []
+current_user_id = str(subprocess.check_output(["id","-u"], universal_newlines=True).rstrip())
 
 if cfg["System"] == "x32":
 	qemu_cmd.append("qemu-system-i386")
@@ -169,6 +170,8 @@ qemu_cmd += ["-cpu", cfg["CpuType"],
 			"-vga", cfg["DisplayDriver"],
 			"-display", "sdl,gl=on",
 			"-soundhw", cfg["SoundDriver"],
+			"-audiodev",
+			"pa,id=pa1,server=/run/user/" + current_user_id + "/pulse/native",
 			"-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
 if cfg["RngDevice"].lower() == "yes":
@@ -191,14 +194,10 @@ if os.path.isfile(cfg["CDRomISO"]):
 	qemu_cmd += ["-cdrom", cfg["CDRomISO"]]
 # END QEMU CMD Line
 
-#print(qemu_cmd)
-#sys.exit(0)
-
 qemu_env = os.environ.copy()
 qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
 qemu_env["QEMU_AUDIO_DRV"] = "pa"
-#qemu_env["QEMU_AUDIO_DRV"] = "alsa"
-qemu_env["QEMU_PA_SAMPLES"] = "2205"
+qemu_env["QEMU_PA_SERVER"] = "/run/user/" + current_user_id + "/pulse/native"
 
 def subprocess_qemu():
 	p = subprocess.Popen(qemu_cmd,
