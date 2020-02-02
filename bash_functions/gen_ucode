@@ -1,0 +1,2 @@
+gen_ucode() { echo $(date +%s)$(cat /sys/class/net/*/address)$(head -c 100 /dev/urandom | base64) | sha1sum | cut -d" " -f1; }
+

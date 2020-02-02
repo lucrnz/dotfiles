@@ -1,0 +1,10 @@
+#!/bin/bash
+# $1 = file to compress&encode
+code=$(xz -z -e -9 -T 8 -q /tmp/list -k -c | base64 | tr -d '\n')
+cmd="echo -n \"${code}\" | base64 -d | xz -d -k -c -q - > /tmp/myfile"
+
+echo -n $cmd | xsel
+echo -n $cmd | xsel -b
+
+echo "Snippet generated and sent to xsel & xsel -b"
+

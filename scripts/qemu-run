@@ -1,11 +1,32 @@
 #!/usr/bin/env python3
-#needs configobj
-#sudo pacman -S python-pip --needed && sudo pip install configobj
+'''
+MIT/X Consortium License
+© 2020 Lucie Cupcakes <cirno9moe at gmail dot com>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+'''
+
+# needs configobj
+# sudo pacman -S python-pip --needed && sudo pip install configobj
 
 # Start Imports
-import subprocess
-import os
-import sys
+import os, sys, errno, socket, subprocess
 from configobj import ConfigObj
 # End Imports
 
@@ -22,35 +43,114 @@ def get_disk_format(file_path):
 			if s == "format:":
 				prev_was_fmt = True
 	return result
+
+def spawn_daemon(func):
+	# do the UNIX double-fork magic, see Stevens' "Advanced
+	# Programming in the UNIX Environment" for details (ISBN 0201563177)
+	try:
+		pid = os.fork()
+		if pid > 0:
+			return
+	except OSError as e:
+		print("fork #1 failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
+		sys.exit(1)
+	os.setsid()
+	try:
+		pid = os.fork()
+		if pid > 0:
+			sys.exit(0)
+	except OSError as e:
+		print("fork #2 failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
+		sys.exit(1)
+	func()
+	os._exit(os.EX_OK)
+
+def check_if_port_is_used(addr, port):
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	try:
+		s.bind((addr, port))
+	except socket.error as e:
+		if e.errno == errno.EADDRINUSE:
+			return True
+		else:
+			print("socket.bind failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
+			sys.exit(1)
+	s.close()
+	return False
 # End Functions
+
+# Use environment variable to find where the VM is
+vm_dir=""
+if not 1 in sys.argv:
+	print("Warning: No arguments, assuming the VM is in CWD.", file=sys.stderr)
+	vm_dir = os.getcwd()
+else:	# Normal lookup using ENV var
+	try:
+		vm_dir_env = os.environ["QEMURUN_VM_PATH"].split(":")
+	except:
+		print("Cannot find environment variable QEMURUN_VM_PATH.\nPython error \#%d (%s)" % (e.errno, e.strerror), file=sys.stderr)
+
+	for p in vm_dir_env:
+		vm_dir=p+"/"+sys.argv[1]
+		if os.path.exists(vm_dir):
+			break
+
+	if not os.path.exists(vm_dir):
+		print("Cannot find VM: %s, Check your VM_PATH env. variable ?." % (vm_dir), file=sys.stderr)
+		sys.exit(1)
+
 # Start Default config
 cfg = {}
-vm_dir=os.environ["HOME"]+"/VM/"+sys.argv[1]
 cfg["System"] = "x64"
 cfg["CpuType"] = "host"
-cfg["CpuCores"] = subprocess.check_output(["nproc"])
+cfg["CpuCores"] = subprocess.check_output(["nproc"]) #TODO: Get cores using Python?
 cfg["MemorySize"] = "2G"
 cfg["Acceleration"] = "Yes"
 cfg["DisplayDriver"] = "std"
+cfg["SoundDriver"] = "hda"
 cfg["Boot"] = "c"
-cfg["ForwardPorts"] = ""
-cfg["RandomDevice"] = "Yes"
+cfg["ForwardPorts"] = "" #TODO
+cfg["HardDiskVirtio"] = "No"
+cfg["MonitorPort"] = "6000"
+cfg["SharedFolder"] = "shared"
+cfg["NetworkDriver"] = "virtio-net-pci"
+cfg["RngDevice"] = "Yes"
 
-if os.path.isfile(vm_dir + "/cdrom.iso"):
-	cfg["CDRomISO"] = vm_dir + "/cdrom.iso"
+if os.path.isfile(vm_dir + "/cdrom"):
+	cfg["CDRomISO"] = "cdrom"
 else:
 	cfg["CDRomISO"] = "No"
 
-if os.path.isfile(vm_dir + "/disk.qcow2"):
-	cfg["HardDisk"] = vm_dir + "/disk.qcow2"
-# End Default Config
-# Start Load Config File
+if os.path.isfile(vm_dir + "/disk"):
+	cfg["HardDisk"] = "disk"
+
+# Load Config File
 vm_cfg_file_path = vm_dir + "/config"
 if os.path.isfile(vm_cfg_file_path):
 	vm_cfg_file = ConfigObj(vm_cfg_file_path)
 	for k, v in vm_cfg_file.items():
 		cfg[k] = v
-# End Load Config File
+else:
+	print("Cannot find config file.", file=sys.stderr)
+	sys.exit(1)
+
+# Convert Relative Paths to Absolute Paths
+if os.path.isfile(vm_dir + "/" + cfg["HardDisk"]):
+	cfg["HardDisk"] = vm_dir + "/" + cfg["HardDisk"]
+
+if os.path.isfile(vm_dir + "/" + cfg["CDRomISO"]):
+	cfg["CDRomISO"] = vm_dir + "/" + cfg["CDRomISO"]
+
+if os.path.exists(vm_dir + "/" + cfg["SharedFolder"]):
+	cfg["SharedFolder"] = vm_dir + "/" + cfg["SharedFolder"]
+
+# Checking and configuring a telnet port
+telnet_port = int(cfg["MonitorPort"])
+while check_if_port_is_used("127.0.0.1", telnet_port):
+	telnet_port += 1;
+cfg["MonitorPort"] = str(telnet_port)
+del telnet_port # I dont need this temp variable anymore
+
 # Start QEMU CMD Line
 qemu_cmd = []
 
@@ -58,28 +158,56 @@ if cfg["System"] == "x32":
 	qemu_cmd.append("qemu-system-i386")
 elif cfg["System"] == "x64":
 	qemu_cmd.append("qemu-system-x86_64")
-
 if cfg["Acceleration"].lower() == "yes":
 	qemu_cmd.append("--enable-kvm")
 
-qemu_cmd += ["-cpu", cfg["CpuType"] ,"-smp", cfg["CpuCores"], "-m", cfg["MemorySize"], "-boot", "order="+ cfg["Boot"], "-usb", "-device", "usb-tablet"]
+qemu_cmd += ["-cpu", cfg["CpuType"],
+			"-smp", cfg["CpuCores"],
+			"-m", cfg["MemorySize"],
+			"-boot", "order=" + cfg["Boot"],
+			"-usb", "-device", "usb-tablet",
+			"-vga", cfg["DisplayDriver"],
+			"-display", "sdl,gl=on",
+			"-soundhw", cfg["SoundDriver"],
+			"-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
-if cfg["RandomDevice"].lower() == "yes":
-	qemu_cmd += ["-object", "rng-random,id=rng0,filename=/dev/urandom", "-device", "virtio-rng-pci,rng=rng0"]
+if cfg["RngDevice"].lower() == "yes":
+	qemu_cmd += ["-object", "rng-random,id=rng0,filename=/dev/random", "-device", "virtio-rng-pci,rng=rng0"]
 
-qemu_cmd += ["-vga", cfg["DisplayDriver"], "-display", "sdl,gl=on", "-monitor", "stdio", "-nic", "user"]
-#cfg["ForwardPorts"]
+#TODO: Add forwarded ports support
+shared_folder=""
+if os.path.exists(cfg["SharedFolder"]):
+	shared_folder=",smb=" + cfg["SharedFolder"]
+qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + shared_folder]
 
 if os.path.isfile(cfg["HardDisk"]):
-	qemu_cmd += ["-drive", "file=" + cfg["HardDisk"] + ",format=" + get_disk_format(cfg["HardDisk"])]
+	hdd_fmt = get_disk_format(cfg["HardDisk"])
+	hdd_virtio = ""
+	if cfg["HardDiskVirtio"].lower() == "yes":
+		hdd_virtio = ",if=virtio"
+	qemu_cmd += ["-drive", "file=" + cfg["HardDisk"] + ",format=" + hdd_fmt + hdd_virtio]
 
 if os.path.isfile(cfg["CDRomISO"]):
 	qemu_cmd += ["-cdrom", cfg["CDRomISO"]]
 # END QEMU CMD Line
 
 #print(qemu_cmd)
+#sys.exit(0)
 
 qemu_env = os.environ.copy()
 qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
+qemu_env["QEMU_AUDIO_DRV"] = "pa"
+#qemu_env["QEMU_AUDIO_DRV"] = "alsa"
+qemu_env["QEMU_PA_SAMPLES"] = "2205"
 
-subprocess.Popen(qemu_cmd, env=qemu_env).wait()
+def subprocess_qemu():
+	p = subprocess.Popen(qemu_cmd,
+						env=qemu_env,
+						cwd=vm_dir)
+
+	print("QEMU Running at PID: "+ str(p.pid))
+	print("Telnet monitor port: " + cfg["MonitorPort"])
+	print(qemu_cmd)
+	p.wait()
+
+spawn_daemon(subprocess_qemu)
