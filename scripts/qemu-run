@@ -81,7 +81,7 @@ def check_if_port_is_used(addr, port):
 
 # Use environment variable to find where the VM is
 vm_dir=""
-if not 1 in sys.argv:
+if len(sys.argv) == 1: # No args.
 	print("Warning: No arguments, assuming the VM is in CWD.", file=sys.stderr)
 	vm_dir = os.getcwd()
 else:	# Normal lookup using ENV var
@@ -162,8 +162,11 @@ elif cfg["System"] == "x64":
 if cfg["Acceleration"].lower() == "yes":
 	qemu_cmd.append("--enable-kvm")
 
-qemu_cmd += ["-cpu", cfg["CpuType"],
-			"-smp", cfg["CpuCores"],
+if not (cfg["CpuType"].lower() == "host" and cfg["Acceleration"].lower() != "yes"):
+	# Avoiding a non possible config..
+	qemu_cmd += ["-cpu", cfg["CpuType"]]
+
+qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-m", cfg["MemorySize"],
 			"-boot", "order=" + cfg["Boot"],
 			"-usb", "-device", "usb-tablet",
