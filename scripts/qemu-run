@@ -115,6 +115,7 @@ cfg["MonitorPort"] = "6000"
 cfg["SharedFolder"] = "shared"
 cfg["NetworkDriver"] = "virtio-net-pci"
 cfg["RngDevice"] = "Yes"
+cfg["HostVideoAcceleration"] = "Yes"
 
 if os.path.isfile(vm_dir + "/cdrom"):
 	cfg["CDRomISO"] = "cdrom"
@@ -171,20 +172,24 @@ qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-boot", "order=" + cfg["Boot"],
 			"-usb", "-device", "usb-tablet",
 			"-vga", cfg["DisplayDriver"],
-			"-display", "sdl,gl=on",
 			"-soundhw", cfg["SoundDriver"],
 			"-audiodev",
 			"pa,id=pa1,server=/run/user/" + current_user_id + "/pulse/native",
 			"-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
+if cfg["HostVideoAcceleration"].lower() == "yes":
+	qemu_cmd += ["-display", "sdl,gl=on"]
+else:
+	qemu_cmd += ["-display", "gtk,gl=off"]
+
 if cfg["RngDevice"].lower() == "yes":
 	qemu_cmd += ["-object", "rng-random,id=rng0,filename=/dev/random", "-device", "virtio-rng-pci,rng=rng0"]
 
 #TODO: Add forwarded ports support
-shared_folder=""
+sf_str = ""
 if os.path.exists(cfg["SharedFolder"]):
-	shared_folder=",smb=" + cfg["SharedFolder"]
-qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + shared_folder]
+	sf_str = ",smb=" + cfg["SharedFolder"]
+qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + sf_str]
 
 if os.path.isfile(cfg["HardDisk"]):
 	hdd_fmt = get_disk_format(cfg["HardDisk"])
@@ -203,13 +208,15 @@ qemu_env["QEMU_AUDIO_DRV"] = "pa"
 qemu_env["QEMU_PA_SERVER"] = "/run/user/" + current_user_id + "/pulse/native"
 
 def subprocess_qemu():
-	p = subprocess.Popen(qemu_cmd,
+	qemu_sp = subprocess.Popen(qemu_cmd,
 						env=qemu_env,
 						cwd=vm_dir)
 
-	print("QEMU Running at PID: "+ str(p.pid))
+	print("QEMU Running at PID: "+ str(qemu_sp.pid))
 	print("Telnet monitor port: " + cfg["MonitorPort"])
-	print(qemu_cmd)
-	p.wait()
+	
+	env_cpy = os.environ.copy()
+	fix_smb_sp = subprocess.Popen(["bash", "/home/lucie/.conf_files/scripts/qemu_fix_smb.sh"], env=env_cpy)
+	qemu_sp.wait()
 
 spawn_daemon(subprocess_qemu)
