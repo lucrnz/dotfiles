@@ -207,6 +207,8 @@ qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
 qemu_env["QEMU_AUDIO_DRV"] = "pa"
 qemu_env["QEMU_PA_SERVER"] = "/run/user/" + current_user_id + "/pulse/native"
 
+print(qemu_cmd)
+os.exit(0)
 def subprocess_qemu():
 	qemu_sp = subprocess.Popen(qemu_cmd,
 						env=qemu_env,
