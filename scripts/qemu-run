@@ -84,7 +84,7 @@ vm_dir=""
 if len(sys.argv) == 1: # No args.
 	print("Warning: No arguments, assuming the VM is in CWD.", file=sys.stderr)
 	vm_dir = os.getcwd()
-else:	# Normal lookup using ENV var
+else:   # Normal lookup using ENV var
 	try:
 		vm_dir_env = os.environ["QEMURUN_VM_PATH"].split(":")
 	except:
@@ -174,11 +174,12 @@ qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-vga", cfg["DisplayDriver"],
 			"-soundhw", cfg["SoundDriver"],
 			"-audiodev",
-			"pa,id=pa1,server=/run/user/" + current_user_id + "/pulse/native",
-			"-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
+			"pa,id=pa1,server=/run/user/" + current_user_id + "/pulse/native"]
+
+#qemu_cmd += ["-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
 if cfg["HostVideoAcceleration"].lower() == "yes":
-	qemu_cmd += ["-display", "sdl,gl=on"]
+	qemu_cmd += ["-display", "gtk,gl=off"]
 else:
 	qemu_cmd += ["-display", "gtk,gl=off"]
 
@@ -207,18 +208,23 @@ qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
 qemu_env["QEMU_AUDIO_DRV"] = "pa"
 qemu_env["QEMU_PA_SERVER"] = "/run/user/" + current_user_id + "/pulse/native"
 
-print(qemu_cmd)
-os.exit(0)
 def subprocess_qemu():
-	qemu_sp = subprocess.Popen(qemu_cmd,
-						env=qemu_env,
-						cwd=vm_dir)
-
-	print("QEMU Running at PID: "+ str(qemu_sp.pid))
-	print("Telnet monitor port: " + cfg["MonitorPort"])
+	qemu_sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)
+	#print("QEMU Running at PID: "+ str(qemu_sp.pid))
+	#print("Telnet monitor port: " + cfg["MonitorPort"])
 	
-	env_cpy = os.environ.copy()
-	fix_smb_sp = subprocess.Popen(["bash", "/home/lucie/.conf_files/scripts/qemu_fix_smb.sh"], env=env_cpy)
-	qemu_sp.wait()
+	if os.path.exists(cfg["SharedFolder"]):
+		env_cpy = os.environ.copy()
+		fix_smb_sp = subprocess.Popen(["bash", "/home/lucie/.conf_files/scripts/qemu_fix_smb.sh"], env=env_cpy)
+		qemu_sp.wait()
 
-spawn_daemon(subprocess_qemu)
+print_cmd = False
+
+if len(sys.argv) == 3:
+	if sys.argv[2] == "--print-cmd":
+		print_cmd = True
+
+if print_cmd:
+	print(' '.join(qemu_cmd))
+else:
+	spawn_daemon(subprocess_qemu)
