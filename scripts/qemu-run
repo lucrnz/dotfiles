@@ -33,7 +33,7 @@ from configobj import ConfigObj
 # Start Functions
 def get_disk_format(file_path):
 	out = subprocess.check_output(['qemu-img','info', file_path], universal_newlines=True).split()
-	prev_was_fmt=False
+	prev_was_fmt = False
 	result = ""
 	for s in out:
 		if prev_was_fmt:
@@ -64,23 +64,11 @@ def spawn_daemon(func):
 		sys.exit(1)
 	func()
 	os._exit(os.EX_OK)
-
-def check_if_port_is_used(addr, port):
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	try:
-		s.bind((addr, port))
-	except socket.error as e:
-		if e.errno == errno.EADDRINUSE:
-			return True
-		else:
-			print("socket.bind failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
-			sys.exit(1)
-	s.close()
-	return False
 # End Functions
 
 # Use environment variable to find where the VM is
-vm_dir=""
+vm_name = ""
+vm_dir = ""
 if len(sys.argv) == 1: # No args.
 	print("Warning: No arguments, assuming the VM is in CWD.", file=sys.stderr)
 	vm_dir = os.getcwd()
@@ -89,12 +77,11 @@ else:   # Normal lookup using ENV var
 		vm_dir_env = os.environ["QEMURUN_VM_PATH"].split(":")
 	except:
 		print("Cannot find environment variable QEMURUN_VM_PATH.\nPython error \#%d (%s)" % (e.errno, e.strerror), file=sys.stderr)
-
+	vm_name = sys.argv[1]
 	for p in vm_dir_env:
-		vm_dir=p+"/"+sys.argv[1]
+		vm_dir = p + "/" + vm_name
 		if os.path.exists(vm_dir):
 			break
-
 	if not os.path.exists(vm_dir):
 		print("Cannot find VM: %s, Check your VM_PATH env. variable ?." % (vm_dir), file=sys.stderr)
 		sys.exit(1)
@@ -102,6 +89,7 @@ else:   # Normal lookup using ENV var
 # Start Default config
 cfg = {}
 cfg["System"] = "x64"
+cfg["UseUefi"] = "No"
 cfg["CpuType"] = "host"
 cfg["CpuCores"] = subprocess.check_output(["nproc"])
 cfg["MemorySize"] = "2G"
@@ -109,9 +97,8 @@ cfg["Acceleration"] = "Yes"
 cfg["DisplayDriver"] = "virtio"
 cfg["SoundDriver"] = "hda"
 cfg["Boot"] = "c"
-cfg["ForwardPorts"] = "" #TODO
+cfg["FwdPorts"] = ""
 cfg["HardDiskVirtio"] = "No"
-cfg["MonitorPort"] = "6000"
 cfg["SharedFolder"] = "shared"
 cfg["NetworkDriver"] = "virtio-net-pci"
 cfg["RngDevice"] = "Yes"
@@ -125,6 +112,9 @@ else:
 if os.path.isfile(vm_dir + "/disk"):
 	cfg["HardDisk"] = "disk"
 
+if os.path.exists(vm_dir + "/" + cfg["SharedFolder"]):
+	cfg["SharedFolder"] = cfg["SharedFolder"]
+
 # Load Config File
 vm_cfg_file_path = vm_dir + "/config"
 if os.path.isfile(vm_cfg_file_path):
@@ -134,23 +124,6 @@ if os.path.isfile(vm_cfg_file_path):
 else:
 	print("Cannot find config file.", file=sys.stderr)
 	sys.exit(1)
-
-# Convert Relative Paths to Absolute Paths
-if os.path.isfile(vm_dir + "/" + cfg["HardDisk"]):
-	cfg["HardDisk"] = vm_dir + "/" + cfg["HardDisk"]
-
-if os.path.isfile(vm_dir + "/" + cfg["CDRomISO"]):
-	cfg["CDRomISO"] = vm_dir + "/" + cfg["CDRomISO"]
-
-if os.path.exists(vm_dir + "/" + cfg["SharedFolder"]):
-	cfg["SharedFolder"] = vm_dir + "/" + cfg["SharedFolder"]
-
-# Checking and configuring a telnet port
-telnet_port = int(cfg["MonitorPort"])
-while check_if_port_is_used("127.0.0.1", telnet_port):
-	telnet_port += 1;
-cfg["MonitorPort"] = str(telnet_port)
-del telnet_port # I dont need this temp variable anymore
 
 # Start QEMU CMD Line
 qemu_cmd = []
@@ -162,6 +135,12 @@ elif cfg["System"] == "x64":
 	qemu_cmd.append("qemu-system-x86_64")
 if cfg["Acceleration"].lower() == "yes":
 	qemu_cmd.append("--enable-kvm")
+
+if vm_name != "":
+	qemu_cmd += ["-name", vm_name]
+
+if cfg["UseUefi"].lower() == "yes":
+    qemu_cmd += ["-L", "/usr/share/qemu", "-bios", "OVMF.fd"]
 
 if not (cfg["CpuType"].lower() == "host" and cfg["Acceleration"].lower() != "yes"):
 	# Avoiding a non possible config..
@@ -186,11 +165,21 @@ else:
 if cfg["RngDevice"].lower() == "yes":
 	qemu_cmd += ["-object", "rng-random,id=rng0,filename=/dev/random", "-device", "virtio-rng-pci,rng=rng0"]
 
-#TODO: Add forwarded ports support
 sf_str = ""
 if os.path.exists(cfg["SharedFolder"]):
 	sf_str = ",smb=" + cfg["SharedFolder"]
-qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + sf_str]
+
+fwd_ports_str = ""
+if cfg["FwdPorts"] != "":
+	ports_split = cfg["FwdPorts"].split(",")
+	for pair_str in ports_split:
+		if pair_str.find(":") != -1: # If have FordwardPorts = <HostPort>:<GuestPort>
+			pair = pair_str.split(":")
+			fwd_ports_str += ",hostfwd=tcp::" + pair[0] + "-:" + pair[1] + ",hostfwd=udp::" + pair[0] + "-:" + pair[1];
+		else:   # Else use the same port for Host and Guest.
+			fwd_ports_str += ",hostfwd=tcp::" + pair_str + "-:" + pair_str + ",hostfwd=udp::" + pair_str + "-:" + pair_str;
+
+qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + sf_str + fwd_ports_str]
 
 if os.path.isfile(cfg["HardDisk"]):
 	hdd_fmt = get_disk_format(cfg["HardDisk"])
