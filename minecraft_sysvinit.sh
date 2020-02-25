@@ -78,7 +78,7 @@ mc_status() {
 		mc_run_as "tmux send-keys -t minecraft.0 'list'"
 
 		start=`nl $MC_ROOT/logs/latest.log | grep "There are .* players online" | tail -n 1 | awk '{ print $1 }'`
-		p=`grep "There are .* players online" /srv/minecraft/logs/latest.log | tail -n 1 | awk '{ print $6 }' | cut -d/ -f2`
+		p=`grep "There are .* players online" $MC_ROOT/logs/latest.log | tail -n 1 | awk '{ print $6 }' | cut -d/ -f2`
 		end=`expr $start + $p`
 		p=`wc -l $MC_ROOT/logs/latest.log | cut -d' ' -f1`
 		[ "$p" -lt "$end" ] && end="$p"
