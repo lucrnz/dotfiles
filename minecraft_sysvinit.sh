@@ -14,34 +14,27 @@
 
 #Settings
 SERVICE='minecraft'
-USERNAME='minecraft'
-
-BACKUP_ROOT="/usr/local/backups/Hosts/Centauri/srv/${SERVICE}/"
-
-MC_ROOT='/srv/minecraft'
-MC_JAR='minecraft_server.jar'
+USERNAME='lucie'
+BACKUP_ROOT="/home/lucie/backup"
+MC_ROOT='/home/lucie/minecraft_server'
+MC_JAR='forgesv.jar'
 MC_SETTINGS="$MC_ROOT/server.properties"
-
-JAVA_FLAGS="-Xmx4G "
+JAVA_FLAGS="-Xmx2G "
 MC_FLAGS='nogui'
 
-
 mc_run_as() {
-	su -s "/bin/sh" -l $USERNAME -c "$1"
+	su -s "/bin/sh" -l $USERNAME -c "$@"
 }
-
 
 mc_is_running() {
     pgrep -u $USERNAME -f "$MC_JAR" >/dev/null
 }
 
-
 mc_notify() { # mc_notify "message"
-
 	if mc_is_running
 	then
 		echo "Notifying users: $1"
-		mc_run_as "tmux send-key 'say $1'"
+		mc_run_as "tmux send-keys -t minecraft.0 'say $1'"
 	else
 		echo "No users to Notify about: $1"
 	fi
@@ -49,20 +42,15 @@ mc_notify() { # mc_notify "message"
 
 
 mc_start() {
-        if mc_is_running
-        then
-                echo "$SERVICE is already running"
-                return $?
-        fi
+	if mc_is_running; then
+		echo "$SERVICE is already running"
+		return $?
+	fi
 
-        echo "$Starting $SERVICE."
+	echo "$Starting $SERVICE."
 
-	# Minecraft now (mostly) takes care of this sort of stuff.
-	# mc_run_as "mv server.log server.log.last >/dev/null"
-
-	mc_run_as "tmux new -d -s minecraft 'java $JAVA_FLAGS -jar $MC_JAR $MC_FLAGS'"
+	mc_run_as "tmux new -d -s minecraft -c '$MC_ROOT' '/bedrock/bin/strat artix java $JAVA_FLAGS -jar $MC_JAR $MC_FLAGS'"
 }
-
 
 mc_stop() {
         if ! mc_is_running
@@ -73,7 +61,7 @@ mc_stop() {
 
 	echo "Stopping minecraft."
 	mc_notify "SERVER GOING DOWN!"
-	mc_run_as "tmux send-key 'stop'"
+	mc_run_as "tmux send-keys -t minecraft.0 'stop'"
 }
 
 
@@ -87,15 +75,15 @@ mc_status() {
 		# pretty print info about players.
 		#
 
-		mc_run_as "tmux send-key 'list'"
+		mc_run_as "tmux send-keys -t minecraft.0 'list'"
 
-		start=`nl /srv/minecraft/logs/latest.log | grep "There are .* players online" | tail -n 1 | awk '{ print $1 }'`
+		start=`nl $MC_ROOT/logs/latest.log | grep "There are .* players online" | tail -n 1 | awk '{ print $1 }'`
 		p=`grep "There are .* players online" /srv/minecraft/logs/latest.log | tail -n 1 | awk '{ print $6 }' | cut -d/ -f2`
 		end=`expr $start + $p`
-		p=`wc -l /srv/minecraft/logs/latest.log | cut -d' ' -f1`
+		p=`wc -l $MC_ROOT/logs/latest.log | cut -d' ' -f1`
 		[ "$p" -lt "$end" ] && end="$p"
 
-		ed -s /srv/minecraft/logs/latest.log << EOF
+		ed -s $MC_ROOT/logs/latest.log << EOF
 ${start},${end}p
 q
 EOF
@@ -107,102 +95,25 @@ EOF
 
 
 mc_backup() {
-
-	mc_notify 'SERVER BACKUP ABOUT TO START!'
-	mc_stop
+	mc_notify 'Starting server backup!'
+	mc_run_as "tmux send-keys -t minecraft.0 'save-all'"
+	sleep 5s;
 
 	echo "Archiving server."
-	if ! (cd "${MC_ROOT}/.." && tar cf - minecraft) \
-		| xz -c >  "$BACKUP_ROOT"/minecraft-`date +"%Y-%m-%d.%H%M"`.tar.xz
-	then
+
+	backup_file="$BACKUP_ROOT"/minecraft-`date +"%Y-%m-%d.%H%M"`.tar
+	(cd "${MC_ROOT}"; tar cvf "$backup_file" .) && xz -9 -e -vvv "$backup_file"
+
+	if [ "$?" != "0" ]; then
 		echo 'Failed to backup minecraft server. Aborting!'
 		exit 1;
 	fi
+	sync
 }
-
-
-mc_update() { # mc_update "x.y.z"
-	local mc_jar need_restart to_ver
-
-	mc_jar="${MC_ROOT}/${MC_JAR}"
-	if mc_is_running
-	then
-		need_restart=yes
-	else
-		need_restart=no
-	fi
-	to_ver="$1"
-
-
-	if [ -z "$1" ]; then
-		echo "What version am I supposed to download?"
-		echo "Ignoring your request."
-		exit 127
-	fi
-
-	echo "need_restart=$?"
-
-	if [ "$need_restart" = "yes" ]
-	then
-		mc_notify "SERVER WILL BE UPDATED TO $to_ver"
-		mc_stop
-	fi
-
-	if ! mc_backup
-	then
-		echo "Backing up $SERVICE failed!"
-		return 1
-	fi
-
-	echo "old sha1: `sha1sum $mc_jar`"
-	rm -f "$mc_jar"
-	if ! wget -O $mc_jar \
-		"https://s3.amazonaws.com/Minecraft.Download/versions/${to_ver}/minecraft_server.${to_ver}.jar"
-	then
-		echo "Error downloading updated JAR."
-		echo 'You may wish to manually restore server from backup!'
-		return 1
-	fi
-	echo "new sha1: `sha1sum $mc_jar`"
-
-
-	[ "$need_restart" = "yes" ] && echo mc_start
-
-}
-
-
-mc_world() {
-	local old_world new_world default_props real_props
-
-	new_world="$1"
-	old_world="`grep '^level-name=' $MC_SETTINGS | cut -f2 -d=`"
-	default_props="${MC_ROOT}/worlds/server.properties.defaults"
-	real_props="${MC_ROOT}/worlds/${new_world}.properties"
-
-	mc_notify "WARNING: CHANGING WORLDS FROM $old_world TO $new_world"
-	sleep 3
-	mc_stop
-
-	unlink "$MC_SETTINGS"
-	mkdir -p "${MC_ROOT}/worlds/$new_world"
-	if [ ! -f "$real_props" ]; then
-		mc_run_as "cp '$default_props' '$real_props'"
-		echo "level-name=worlds/$new_world" >> "$real_props"
-	fi
-	ln -sf "$real_props" "$MC_SETTINGS"
-
-	sleep 2
-	mc_start
-	sleep 2
-	mc_notify "INFO: CURRENT WORLD IS $new_world"
-}
-
 
 mc_short_help() {
-	echo "Usage: $0 {attach|backup|start|stop|status|restart|update|notify}"
-	echo "       $0 world {name of world to create or change to}"
+	echo "Usage: $0 {attach|backup|start|stop|status|restart|notify}"
 }
-
 
 mc_long_help() {
 	echo ''
@@ -226,16 +137,8 @@ mc_long_help() {
 	echo "sudo service minecraft status"
 	echo "	check if running"
 	echo ''
-	echo "sudo service minecraft world {name of world to create or change to}"
-	echo "	change / create world."
-	echo "	Default properties come from worlds/server.properties.defaults"
-	echo ''
-	echo ''
 	echo "sudo service minecraft notify \"message\""
 	echo "  Notify all players of message."
-	echo ''
-	echo "sudo service minecraft update 1.7.4"
-	echo "  backup server and update to version 1.7.4."
 	echo ''
 }
 
