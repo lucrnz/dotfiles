@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 [ -f "/etc/X11/xinit/.Xresources" ] && xrdb -merge "/etc/X11/xinit/.Xresources"
 [ -f "/etc/X11/xinit/.Xmodmap" ] && xmodmap "/etc/X11/xinit/.Xmodmap"
@@ -6,15 +6,20 @@
 [ -f "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"
 [ -f "$HOME/.Xdefaults" ] && xrdb -merge "$HOME/.Xdefaults"
 
-xsetroot -solid \#000000 -cursor_name top_left_arrow
-nitrogen --restore &
-tint2&
+# since I share this file between computers,
+# dispatch via hostname
 
 if [ "$(hostname)" == "dreams" ]; then
+	xsetroot -solid \#000000 -cursor_name top_left_arrow
+	nitrogen --restore &
+	tint2&
 	picom&
 	systemctl --user start dirmngr.service&
+	unclutter --timeout 1 &
+	exec 2bwm
 fi
 
-unclutter --timeout 1 &
-exec 2bwm
+if [ "$(hostname)" == "dva" ]; then
+	exec strat void startlxqt
+fi
 

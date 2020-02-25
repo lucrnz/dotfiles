@@ -1,6 +1,6 @@
 [[ $- != *i* ]] && return
 
-export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;33m\]@\[$(tput sgr0)\]\[\033[38;5;15m\]\h:\[$(tput sgr0)\]\[\033[38;5;219m\][\[$(tput sgr0)\]\[\033[38;5;141m\]\w\[$(tput sgr0)\]\[\033[38;5;219m\]]\[$(tput sgr0)\]\[\033[38;5;45m\]>\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]"
+export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
 [ -f "$HOME/.is_phone" ] && PS1=$(echo "$PS1" | sed 's/\\h/phone/g')
@@ -8,7 +8,7 @@ export PS1="\[\033[38;5;51m\]\u\[$(tput sgr0)\]\[\033[38;5;33m\]@\[$(tput sgr0)\
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
 
 export EDITOR=$(which nvim)
-export QEMURUN_VM_PATH="/media/pearl/VM"
+export QEMURUN_VM_PATH="$HOME/VM:/media/pearl/VM"
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
