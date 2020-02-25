@@ -8,6 +8,11 @@
 # Description:       PulseAudio system service
 ### END INIT INFO
 
+# Alternative solution:
+# Run pulseaudio as my user (lucie) without --system
+
+# lucie_ow_: if you *dont* use --system it'll be happy to run as non-root.  It depends what your goal is.  If you want a system-wide pulseaudio, you need to run it as root and use --system (or do more complicated configuration).  If you just want it for your user, run it without --system and as your user.
+
 DAEMON=/usr/bin/pulseaudio
 PIDFILE=/run/pulseaudio_system.pid
 
