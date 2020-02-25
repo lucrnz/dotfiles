@@ -8,6 +8,7 @@
 # Description:       PulseAudio system service
 ### END INIT INFO
 
+DAEMON=/usr/bin/pulseaudio
 PIDFILE=/run/pulseaudio_system.pid
 
 start() {
@@ -16,13 +17,14 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-	/usr/bin/pulseaudio --system=true --disallow-exit &
-	echo $1 > $PIDFILE
+	$DAEMON --system=true --disallow-exit &
+	sleep 1s
+	pidof $DAEMON > $PIDFILE
 	echo 'Service started' >&2
 }
 
 stop() {
-  if [ ! -f "$PIDFILE" ] || ps -p $(cat "$PIDFILE") >/dev/null; then
+  if [ ! -f "$PIDFILE" ] || ! ps -p $(cat "$PIDFILE") >/dev/null; then
     echo 'Service not running' >&2
     return 1
   fi
@@ -37,7 +39,7 @@ status() {
 		return 1
 	fi
 
-	if ps -p $(cat "$PIDFILE") >/dev/null; then
+	if ! ps -p $(cat "$PIDFILE") >/dev/null; then
 		echo 'Service not running' >&2
 		return 1
 	else
