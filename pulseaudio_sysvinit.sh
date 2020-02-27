@@ -22,7 +22,7 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-	$DAEMON --system=true --disallow-exit &
+	$DAEMON --system=true --disallow-exit >/dev/null 2>&1 &
 	sleep 1s
 	pidof $DAEMON > $PIDFILE
 	echo 'Service started' >&2

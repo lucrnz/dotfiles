@@ -15,10 +15,11 @@
 #Settings
 SERVICE='minecraft'
 USERNAME='lucie'
-BACKUP_ROOT="/home/lucie/backup"
-MC_ROOT='/home/lucie/minecraft_server'
+BACKUP_ROOT="/media/reimu/backup"
+MC_ROOT='/home/lucie/MinecraftServer'
 MC_JAR='forgesv.jar'
 MC_SETTINGS="$MC_ROOT/server.properties"
+JAVA_BIN='java'
 JAVA_FLAGS="-Xmx2G "
 MC_FLAGS='nogui'
 
@@ -40,7 +41,6 @@ mc_notify() { # mc_notify "message"
 	fi
 }
 
-
 mc_start() {
 	if mc_is_running; then
 		echo "$SERVICE is already running"
@@ -49,7 +49,7 @@ mc_start() {
 
 	echo "$Starting $SERVICE."
 
-	mc_run_as "tmux new -d -s minecraft -c '$MC_ROOT' '/bedrock/bin/strat artix java $JAVA_FLAGS -jar $MC_JAR $MC_FLAGS'"
+	mc_run_as "tmux new -d -s minecraft -c '$MC_ROOT' '$JAVA_BIN $JAVA_FLAGS -jar $MC_JAR $MC_FLAGS'"
 }
 
 mc_stop() {
@@ -101,8 +101,11 @@ mc_backup() {
 
 	echo "Archiving server."
 
-	backup_file="$BACKUP_ROOT"/minecraft-`date +"%Y-%m-%d.%H%M"`.tar
-	(cd "${MC_ROOT}"; tar cvf "$backup_file" .) && xz -9 -e -vvv "$backup_file"
+	#backup_file="$BACKUP_ROOT"/minecraft-`date +"%Y-%m-%d.%H%M"`.tar
+	#(cd "${MC_ROOT}"; tar cvf "$backup_file" .) && xz -9 -e -vvv "$backup_file"
+	backup_folder="$BACKUP_ROOT/$(date +%Y%M%d_%H%M)"
+	mkdir $backup_folder
+	(cd "${MC_ROOT}" && cp -av . $backup_folder)
 
 	if [ "$?" != "0" ]; then
 		echo 'Failed to backup minecraft server. Aborting!'

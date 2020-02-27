@@ -1,27 +1,4 @@
 #!/usr/bin/env python3
-'''
-MIT/X Consortium License
-© 2020 Lucie Cupcakes <cirno9moe at gmail dot com>
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-'''
-
 # needs configobj
 # sudo pacman -S python-pip --needed && sudo pip install configobj
 
@@ -146,6 +123,9 @@ if not (cfg["CpuType"].lower() == "host" and cfg["Acceleration"].lower() != "yes
 	# Avoiding a non possible config..
 	qemu_cmd += ["-cpu", cfg["CpuType"]]
 
+pulseaudio_socket = "/run/pulse/native"
+# pulseaudio_socket = "/run/user/" + current_user_id + "/pulse/native"
+
 qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-m", cfg["MemorySize"],
 			"-boot", "order=" + cfg["Boot"],
@@ -153,7 +133,7 @@ qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-vga", cfg["DisplayDriver"],
 			"-soundhw", cfg["SoundDriver"],
 			"-audiodev",
-			"pa,id=pa1,server=/run/user/" + current_user_id + "/pulse/native"]
+			"pa,id=pa1,server=" + pulseaudio_socket]
 
 #qemu_cmd += ["-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
@@ -181,21 +161,25 @@ if cfg["FwdPorts"] != "":
 
 qemu_cmd += ["-nic", "user,model=" + cfg["NetworkDriver"] + sf_str + fwd_ports_str]
 
+drive_index = 0
+
 if os.path.isfile(cfg["HardDisk"]):
 	hdd_fmt = get_disk_format(cfg["HardDisk"])
 	hdd_virtio = ""
 	if cfg["HardDiskVirtio"].lower() == "yes":
 		hdd_virtio = ",if=virtio"
-	qemu_cmd += ["-drive", "file=" + cfg["HardDisk"] + ",format=" + hdd_fmt + hdd_virtio]
+	qemu_cmd += ["-drive", "file=" + cfg["HardDisk"] + ",format=" + hdd_fmt + hdd_virtio + ",index=" + str(drive_index)]
+	drive_index += 1
 
 if os.path.isfile(cfg["CDRomISO"]):
-	qemu_cmd += ["-cdrom", cfg["CDRomISO"]]
+	qemu_cmd += ["-drive", "file=" + cfg["CDRomISO"] + ",media=cdrom,index=" + str(drive_index)]
+	drive_index += 1
 # END QEMU CMD Line
 
 qemu_env = os.environ.copy()
 qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
 qemu_env["QEMU_AUDIO_DRV"] = "pa"
-qemu_env["QEMU_PA_SERVER"] = "/run/user/" + current_user_id + "/pulse/native"
+qemu_env["QEMU_PA_SERVER"] = pulseaudio_socket
 
 def subprocess_qemu():
 	qemu_sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)

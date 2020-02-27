@@ -10,13 +10,15 @@
 # dispatch via hostname
 
 if [ "$(hostname)" == "dreams" ]; then
-	xsetroot -solid \#000000 -cursor_name top_left_arrow
-	nitrogen --restore &
-	tint2&
-	picom&
-	systemctl --user start dirmngr.service&
-	unclutter --timeout 1 &
-	exec 2bwm
+	exec strat void startlxqt
+
+#	xsetroot -solid \#000000 -cursor_name top_left_arrow
+#	nitrogen --restore &
+#	tint2&
+#	picom&
+#	systemctl --user start dirmngr.service&
+#	unclutter --timeout 1 &
+#	exec 2bwm
 fi
 
 if [ "$(hostname)" == "dva" ]; then

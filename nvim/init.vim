@@ -1,6 +1,5 @@
 " Tabsize to 4 spaces.
-:set autoindent
-:set noexpandtab
-:set tabstop=4
-:set shiftwidth=4
+set tabstop=4
+set shiftwidth=4
+set softtabstop=0 noexpandtab
 
