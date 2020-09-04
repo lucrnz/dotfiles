@@ -41,6 +41,19 @@ def spawn_daemon(func):
 		sys.exit(1)
 	func()
 	os._exit(os.EX_OK)
+	
+def get_qemu_version():
+    result = []
+    str_ver = subprocess.check_output(['qemu-system-i386', '--version']).decode(sys.stdout.encoding).strip()
+    str_ver = str_ver.splitlines()[0].lower() # grab first line
+    #check for shit added by distros : for example: "(Debian)"
+    if str_ver.find('(') > -1:
+        str_ver = str_ver.split('(')[0].strip()
+    str_ver = str_ver.split('version')[1].strip().split('.')
+    for i in str_ver: #convert array<str> to array<int>
+        result.append(int(i))
+    return result
+
 # End Functions
 
 # Use environment variable to find where the VM is
@@ -68,7 +81,7 @@ cfg = {}
 cfg["System"] = "x64"
 cfg["UseUefi"] = "No"
 cfg["CpuType"] = "host"
-cfg["CpuCores"] = subprocess.check_output(["nproc"])
+cfg["CpuCores"] = subprocess.check_output(["nproc"]).decode(sys.stdout.encoding).strip()
 cfg["MemorySize"] = "2G"
 cfg["Acceleration"] = "Yes"
 cfg["DisplayDriver"] = "virtio"
@@ -104,6 +117,7 @@ else:
 
 # Start QEMU CMD Line
 qemu_cmd = []
+qemu_ver = get_qemu_version()
 current_user_id = str(subprocess.check_output(["id","-u"], universal_newlines=True).rstrip())
 
 if cfg["System"] == "x32":
@@ -131,9 +145,10 @@ qemu_cmd += ["-smp", cfg["CpuCores"],
 			"-boot", "order=" + cfg["Boot"],
 			"-usb", "-device", "usb-tablet",
 			"-vga", cfg["DisplayDriver"],
-			"-soundhw", cfg["SoundDriver"],
-			"-audiodev",
-			"pa,id=pa1,server=" + pulseaudio_socket]
+			"-soundhw", cfg["SoundDriver"]]
+
+if qemu_ver[0] >= 4:
+    qemu_cmd += ["-audiodev", "pa,id=pa1,server=" + pulseaudio_socket]
 
 #qemu_cmd += ["-monitor", "telnet:127.0.0.1:" + cfg["MonitorPort"] + ",server,nowait"]
 
@@ -198,6 +213,7 @@ if len(sys.argv) == 3:
 		print_cmd = True
 
 if print_cmd:
-	print(' '.join(qemu_cmd))
+	#print(' '.join(qemu_cmd))
+	print(*qemu_cmd)
 else:
 	spawn_daemon(subprocess_qemu)

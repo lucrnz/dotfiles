@@ -8,7 +8,7 @@ export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
 
 export EDITOR=$(which nvim)
-export QEMURUN_VM_PATH="$HOME/VM:/media/pearl/VM"
+export QEMURUN_VM_PATH="$HOME/VM"
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
