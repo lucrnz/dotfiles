@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-# needs configobj
-# sudo pacman -S python-pip --needed && sudo pip install configobj
+# Needs configobj
+# ArchLinux: sudo pacman -S python-pip --needed && sudo pip install configobj
+# Debian: sudo apt install python3-pip -y && sudo pip3 install configobj
 
 # Start Imports
 import os, sys, errno, socket, subprocess
