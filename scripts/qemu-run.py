@@ -94,6 +94,7 @@ cfg["SharedFolder"] = "shared"
 cfg["NetworkDriver"] = "virtio-net-pci"
 cfg["RngDevice"] = "Yes"
 cfg["HostVideoAcceleration"] = "Yes"
+cfg["LocalTime"] = "No"
 
 if os.path.isfile(vm_dir + "/cdrom"):
 	cfg["CDRomISO"] = "cdrom"
@@ -101,10 +102,10 @@ else:
 	cfg["CDRomISO"] = "No"
 
 if os.path.isfile(vm_dir + "/disk"):
-	cfg["HardDisk"] = "disk"
+	cfg["HardDisk"] = vm_dir + "/disk"
 
 if os.path.exists(vm_dir + "/" + cfg["SharedFolder"]):
-	cfg["SharedFolder"] = cfg["SharedFolder"]
+	cfg["SharedFolder"] = vm_dir + "/" + cfg["SharedFolder"]
 
 # Load Config File
 vm_cfg_file_path = vm_dir + "/config"
@@ -190,6 +191,10 @@ if os.path.isfile(cfg["HardDisk"]):
 if os.path.isfile(cfg["CDRomISO"]):
 	qemu_cmd += ["-drive", "file=" + cfg["CDRomISO"] + ",media=cdrom,index=" + str(drive_index)]
 	drive_index += 1
+
+if cfg["LocalTime"] == "Yes":
+	qemu_cmd += ["-rtc", "base=localtime"]
+
 # END QEMU CMD Line
 
 qemu_env = os.environ.copy()

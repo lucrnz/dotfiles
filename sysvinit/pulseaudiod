@@ -13,60 +13,63 @@
 
 # lucie_ow_: if you *dont* use --system it'll be happy to run as non-root.  It depends what your goal is.  If you want a system-wide pulseaudio, you need to run it as root and use --system (or do more complicated configuration).  If you just want it for your user, run it without --system and as your user.
 
+SERVICE_NAME="PulseAudio"
 DAEMON=/usr/bin/pulseaudio
 PIDFILE=/run/pulseaudio_system.pid
+#USER="lucie"
+#RUN_AS_SYSTEM=0
 
 start() {
-  if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
-    echo 'Service already running' >&2
-    return 1
-  fi
-  echo 'Starting service…' >&2
+	if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
+		echo 'Service already running' >&2
+		return 1
+	fi
+	echo "Starting $SERVICE_NAME ..." >&2
 	$DAEMON --system=true --disallow-exit >/dev/null 2>&1 &
+	#sudo -u $USER $DAEMON --start --disallow-exit >/dev/null 2>&1 &
 	sleep 1s
 	pidof $DAEMON > $PIDFILE
-	echo 'Service started' >&2
+	echo "$SERVICE_NAME started" >&2
 }
 
 stop() {
-  if [ ! -f "$PIDFILE" ] || ! ps -p $(cat "$PIDFILE") >/dev/null; then
-    echo 'Service not running' >&2
-    return 1
-  fi
-  echo 'Stopping service…' >&2
-  kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
-  echo 'Service stopped' >&2
+	if [ ! -f "$PIDFILE" ] || ! ps -p $(cat "$PIDFILE") >/dev/null; then
+		echo "$SERVICE_NAME not running" >&2
+		return 1
+	fi
+	echo "Stopping $SERVICE_NAME …" >&2
+	kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+	echo "$SERVICE_NAME stopped" >&2
 }
 
 status() {
 	if [ ! -f "$PIDFILE" ]; then
-		echo 'Service not running' >&2
+		echo "$SERVICE_NAME not running" >&2
 		return 1
 	fi
 
 	if ! ps -p $(cat "$PIDFILE") >/dev/null; then
-		echo 'Service not running' >&2
+		echo "$SERVICE_NAME not running" >&2
 		return 1
 	else
-		echo "Service is running at PID $(cat $PIDFILE)" >&2
+		echo "$SERVICE_NAME is running at PID $(cat $PIDFILE)" >&2
 		return 0
 	fi
 }
 
 case "$1" in
 	start)
-    	start
-    ;;
+		start
+	;;
 	stop)
-    	stop
-    ;;
+		stop
+	;;
 	restart)
 		stop; start
-    ;;
+	;;
 	status)
 		status
 	;;
 	*)
 		echo "Usage: $0 {start|stop|restart|status}"
 esac
-
