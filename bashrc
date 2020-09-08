@@ -8,7 +8,16 @@ export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
 
-export EDITOR=$(which nvim)
+if command -v nvim &>/dev/null; then
+	export EDITOR=$(which nvim)
+elif command -v vim &>/dev/null; then
+	export EDITOR=$(which vim)
+elif command -v nano &>/dev/null; then
+	export EDITOR=$(which nano)
+else
+	echo "Bashrc couldnt find an editor. sorry"
+fi
+
 export QEMURUN_VM_PATH="$HOME/VM"
 
 alias ls='ls --color=auto'
