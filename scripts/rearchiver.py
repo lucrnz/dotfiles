@@ -10,8 +10,8 @@ def get_filelist_by_extension(folder, ext):
 				result.append(f)
 	return result
 
-def compress_folder(folder, archiver_file_path, target_type, compression_level):
-	arguments = ["7za", "a", "-t" + target_type, "-mx" + compression_level, archiver_file_path]
+def compress_folder(folder, archiver_file_path, compression_level):
+	arguments = ["7za", "a", "-tzip" , "-mx" + compression_level, archiver_file_path]
 	arguments += os.listdir(folder)
 	process = subprocess.Popen(arguments, cwd=folder, env=os.environ.copy(), stdout=subprocess.DEVNULL)
 	process.wait()
@@ -31,21 +31,21 @@ def remove_folder_recursive(folder):
 	return (process.returncode == 0) and os.path.exists(folder) == False
 
 def process_folder(target_dir, compression_level):
-	for zipfile in get_filelist_by_extension(target_dir, "zip"):
-		print("Processing " + zipfile)
-		process_file(os.path.join(target_dir, zipfile))
+	for archive_file in get_filelist_by_extension(target_dir, "zip"):
+		print("Processing " + archive_file)
+		process_file(os.path.join(target_dir, archive_file))
 
-def process_file(zipfile_fullpath, compression_level):
+def process_file(archive_file_fullpath, compression_level):
 	tmp_folder = "/tmp/reachiverpy_" + str(uuid.uuid4())
 	os.mkdir(tmp_folder)
-	if decompress_archiver(zipfile_fullpath, tmp_folder):
-		os.remove(zipfile_fullpath)
-		compress_folder(tmp_folder, zipfile_fullpath, compression_level)
+	if decompress_archiver(archive_file_fullpath, tmp_folder):
+		os.remove(archive_file_fullpath)
+		compress_folder(tmp_folder, archive_file_fullpath, compression_level)
 	remove_folder_recursive(tmp_folder)
 
 def main():
 	compression_level = sys.argv[1] # compression level = 0 - None - 9 - Best
-	target = sys.argv[2] #folder to find files to recompress / zip file to rearchive
+	target = sys.argv[2] #folder to find files to recompress / Archive file to rearchive
 
 	if target == ".":
 		target = os.getcwd()
