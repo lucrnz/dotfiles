@@ -17,9 +17,9 @@ def get_filelist(folder):
 			result.append(f)
 	return result
 
-def compress_folder(folder, zip_file_path):
+def compress_folder(folder, zip_file_path, compression_level):
 	file_list = get_filelist(folder)
-	arguments = ["7za", "a", "-tzip", "-mx0", zip_file_path]
+	arguments = ["7za", "a", "-tzip", "-mx" + compression_level, zip_file_path]
 	arguments += file_list
 	process = subprocess.Popen(arguments, cwd=folder, env=os.environ.copy(), stdout=subprocess.DEVNULL)
 	process.wait()
@@ -38,8 +38,10 @@ def remove_folder_recursive(folder):
 	process.wait()
 	return (process.returncode == 0) and os.path.exists(folder) == False
 
-#sys.argv[1] = folder to find files to recompress
-target_dir = sys.argv[1]
+#sys.argv[1] = compression level = 0 - None - 9 -Best
+#sys.argv[2] = folder to find files to recompress
+compression_level = sys.argv[1]
+target_dir = sys.argv[2]
 
 if os.path.exists(target_dir):
 	target_dir = os.path.abspath(target_dir)
@@ -57,6 +59,6 @@ for zipfile in get_filelist_by_extension(target_dir, "zip"):
 	print("Processing " + zipfile)
 	if decompress_archiver(zipfile_fullpath, tmp_folder):
 		os.remove(zipfile_fullpath)
-		compress_folder(tmp_folder, zipfile_fullpath)
+		compress_folder(tmp_folder, zipfile_fullpath, compression_level)
 
 remove_folder_recursive(tmp_folder_parent)
