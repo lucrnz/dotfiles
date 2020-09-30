@@ -38,27 +38,36 @@ def remove_folder_recursive(folder):
 	process.wait()
 	return (process.returncode == 0) and os.path.exists(folder) == False
 
-#sys.argv[1] = compression level = 0 - None - 9 -Best
-#sys.argv[2] = folder to find files to recompress
-compression_level = sys.argv[1]
-target_dir = sys.argv[2]
+def process_folder(target_dir, compression_level):
+	for zipfile in get_filelist_by_extension(target_dir, "zip"):
+		print("Processing " + zipfile)
+		process_file(os.path.join(target_dir, zipfile))
 
-if os.path.exists(target_dir):
-	target_dir = os.path.abspath(target_dir)
-else:
-	print("Target directory does not exists.")
-	sys.exit()
-
-tmp_folder_parent = "/tmp/reachiverpy_" + str(uuid.uuid4())
-os.mkdir(tmp_folder_parent)
-
-for zipfile in get_filelist_by_extension(target_dir, "zip"):
-	zipfile_fullpath = os.path.join(target_dir, zipfile)
-	tmp_folder = os.path.join(tmp_folder_parent, os.path.splitext(zipfile)[0] + "_" + str(uuid.uuid4()))
+def process_file(zipfile_fullpath, compression_level):
+	tmp_folder = "/tmp/reachiverpy_" + str(uuid.uuid4())
 	os.mkdir(tmp_folder)
-	print("Processing " + zipfile)
 	if decompress_archiver(zipfile_fullpath, tmp_folder):
 		os.remove(zipfile_fullpath)
 		compress_folder(tmp_folder, zipfile_fullpath, compression_level)
+	remove_folder_recursive(tmp_folder)
 
-remove_folder_recursive(tmp_folder_parent)
+#sys.argv[1] = compression level = 0 - None - 9 -Best
+#sys.argv[2] = folder to find files to recompress / zip file to rearchive
+compression_level = sys.argv[1]
+target = sys.argv[2]
+
+if target == ".":
+	target = os.getcwd()
+
+if os.path.exists(target):
+	target = os.path.abspath(target)
+else:
+	print("Target does not exists.")
+	sys.exit()
+
+if os.path.isdir(target):
+	process_folder(target, compression_level)
+elif os.path.isfile(target):
+	process_file(target, compression_level)
+else:
+	print("Unsuported file")
