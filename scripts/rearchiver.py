@@ -10,17 +10,9 @@ def get_filelist_by_extension(folder, ext):
 				result.append(f)
 	return result
 
-def get_filelist(folder):
-	result = []
-	for f in os.listdir(folder):
-		if os.path.isfile(f):
-			result.append(f)
-	return result
-
-def compress_folder(folder, zip_file_path, compression_level):
-	file_list = get_filelist(folder)
-	arguments = ["7za", "a", "-tzip", "-mx" + compression_level, zip_file_path]
-	arguments += file_list
+def compress_folder(folder, archiver_file_path, target_type, compression_level):
+	arguments = ["7za", "a", "-t" + target_type, "-mx" + compression_level, archiver_file_path]
+	arguments += os.listdir(folder)
 	process = subprocess.Popen(arguments, cwd=folder, env=os.environ.copy(), stdout=subprocess.DEVNULL)
 	process.wait()
 	return process.returncode == 0
@@ -51,23 +43,25 @@ def process_file(zipfile_fullpath, compression_level):
 		compress_folder(tmp_folder, zipfile_fullpath, compression_level)
 	remove_folder_recursive(tmp_folder)
 
-#sys.argv[1] = compression level = 0 - None - 9 -Best
-#sys.argv[2] = folder to find files to recompress / zip file to rearchive
-compression_level = sys.argv[1]
-target = sys.argv[2]
+def main():
+	compression_level = sys.argv[1] # compression level = 0 - None - 9 - Best
+	target = sys.argv[2] #folder to find files to recompress / zip file to rearchive
 
-if target == ".":
-	target = os.getcwd()
+	if target == ".":
+		target = os.getcwd()
 
-if os.path.exists(target):
-	target = os.path.abspath(target)
-else:
-	print("Target does not exists.")
-	sys.exit()
+	if os.path.exists(target):
+		target = os.path.abspath(target)
+	else:
+		print("Target does not exists.")
+		sys.exit()
 
-if os.path.isdir(target):
-	process_folder(target, compression_level)
-elif os.path.isfile(target):
-	process_file(target, compression_level)
-else:
-	print("Unsuported file")
+	if os.path.isdir(target):
+		process_folder(target, compression_level)
+	elif os.path.isfile(target):
+		process_file(target, compression_level)
+	else:
+		print("Unsuported file")
+
+if __name__ == "__main__":
+	main()
