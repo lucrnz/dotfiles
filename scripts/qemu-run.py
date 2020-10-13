@@ -200,7 +200,7 @@ if cfg["LocalTime"] == "Yes":
 qemu_env = os.environ.copy()
 qemu_env["SDL_VIDEO_X11_DGAMOUSE"] = "0"
 qemu_env["QEMU_AUDIO_DRV"] = "pa"
-qemu_env["QEMU_PA_SERVER"] = pulseaudio_socket
+#qemu_env["QEMU_PA_SERVER"] = pulseaudio_socket
 
 def subprocess_qemu():
 	qemu_sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)
