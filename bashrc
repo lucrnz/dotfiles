@@ -4,7 +4,6 @@
 export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
-[ -f "$HOME/.is_phone" ] && PS1=$(echo "$PS1" | sed 's/\\h/phone/g')
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
@@ -18,6 +17,36 @@ elif command -v nano &>/dev/null; then
 else
 	echo "Bashrc couldnt find an editor. sorry"
 fi
+
+activate_nvm() {
+	if ! command -v nvm &>/dev/null; then
+		export NVM_DIR="$HOME/.nvm"
+		if [ -d $NVM_DIR ]; then
+			[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+			[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+			echo 'nvm activated'
+		else
+			echo 'nvm not found/not installed.'
+		fi
+	else
+		echo 'nvm already activated'
+	fi
+}
+
+activate_pyenv() {
+	if ! command -v pyenv &>/dev/null; then
+		if [ -d "$HOME/.pyenv/bin" ]; then
+			export PATH="$HOME/.pyenv/bin:$PATH"
+			eval "$(pyenv init -)"
+			eval "$(pyenv virtualenv-init -)"
+			echo 'pyenv activated'
+		else
+			echo 'pyenv not found/not installed.'
+		fi
+	else
+		echo 'pyenv already activated'
+	fi
+}
 
 export QEMURUN_VM_PATH="$HOME/VM"
 
@@ -41,6 +70,7 @@ ramdisk() {
 		sudo mount -t tmpfs -o size=$1 ramdisk_user /tmp/ramdisk
 	fi
 }
+
 
 #if [ "$HOSTNAME" == "dreams" ]; then
 #	if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
