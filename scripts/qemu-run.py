@@ -30,7 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 # Needs configobj
 # ArchLinux: sudo pacman -S python-pip --needed && sudo pip install configobj
-# Debian: sudo apt install python3-pip -y && sudo pip3 install configobj
+# Debian/Ubuntu: sudo apt install python3-pip -y && sudo pip3 install configobj
+# ===============================================
+# Shared folders needs samba and gawk:
+# Debian/Ubuntu: sudo apt install samba gawk
 
 # Start Imports
 import os, sys, errno, socket, subprocess
@@ -84,6 +87,14 @@ def get_qemu_version():
         result.append(int(i))
     return result
 
+def get_usable_port():
+	port = 0
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	sock.bind(('127.0.0.1', 0))
+	port = sock.getsockname()[1]
+	sock.close()
+	return port
+
 # End Functions
 
 # Use environment variable to find where the VM is
@@ -122,9 +133,10 @@ cfg['HardDiskVirtio'] = 'Yes'
 cfg['SharedFolder'] = 'shared'
 cfg['NetworkDriver'] = 'virtio-net-pci'
 cfg['RngDevice'] = 'Yes'
-cfg['HostVideoAcceleration'] = 'Yes'
+cfg['HostVideoAcceleration'] = 'No'
 cfg['LocalTime'] = 'No'
 cfg['Headless'] = 'No'
+cfg['MonitorPort'] = 5510
 cfg['CDRomISO'] = '{}/cdrom'.format(vm_dir) if os.path.isfile('{}/cdrom'.format(vm_dir)) else 'No'
 cfg['HardDisk'] = '{}/disk'.format(vm_dir) if os.path.isfile('{}/disk'.format(vm_dir)) else 'No'
 
@@ -173,19 +185,21 @@ qemu_cmd += ['-smp', cfg['CpuCores'],
 			'-usb', '-device', 'usb-tablet',
 			'-soundhw', cfg['SoundDriver']]
 
+usable_telnet_port = 0
+
 if cfg['Headless'].lower() == 'yes':
-	qemu_cmd += ['-nographic', '-monitor', 'stdio']
-	#qemu_cmd += ['-monitor', 'telnet:127.0.0.1:' + cfg['MonitorPort'] + ',server,nowait']
+	usable_telnet_port = get_usable_port()
+	qemu_cmd += ['-monitor', 'telnet:127.0.0.1:{},server,nowait'.format(usable_telnet_port)]
+	qemu_cmd += ['-display', 'none']
 else:
 	qemu_cmd += ['-vga', cfg['DisplayDriver']]
+	if cfg['HostVideoAcceleration'].lower() == 'yes':
+		qemu_cmd += ['-display', 'gtk,gl=on']
+	else:
+		qemu_cmd += ['-display', 'gtk,gl=off']
 
 if qemu_ver[0] >= 4:
     qemu_cmd += ['-audiodev', 'pa,id=pa1,server=' + pulseaudio_socket]
-
-if cfg['HostVideoAcceleration'].lower() == 'yes':
-	qemu_cmd += ['-display', 'gtk,gl=off']
-else:
-	qemu_cmd += ['-display', 'gtk,gl=off']
 
 if cfg['RngDevice'].lower() == 'yes':
 	qemu_cmd += ['-object', 'rng-random,id=rng0,filename=/dev/random', '-device', 'virtio-rng-pci,rng=rng0']
@@ -231,13 +245,16 @@ qemu_env['QEMU_AUDIO_DRV'] = 'pa'
 #qemu_env['QEMU_PA_SERVER'] = pulseaudio_socket
 
 def subprocess_qemu():
-	qemu_sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)
-	#print('QEMU Running at PID: '+ str(qemu_sp.pid))
-	#print('Telnet monitor port: ' + cfg['MonitorPort'])
+	sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)
+	print('QEMU Running at PID: {}'.format(str(sp.pid)))
+	if usable_telnet_port != 0:
+		print('Telnet monitor port: {}'.format(str(usable_telnet_port)))
+	return sp
+
+def subprocess_fix_smb():
 	if os.path.exists(cfg['SharedFolder']):
 		env_cpy = os.environ.copy()
 		fix_smb_sp = subprocess.Popen(['bash', '/home/lucie/.conf_files/scripts/qemu_fix_smb.sh'], env=env_cpy)
-		qemu_sp.wait()
 
 print_cmd = False
 
@@ -249,4 +266,5 @@ if print_cmd:
 	#print(' '.join(qemu_cmd))
 	print(*qemu_cmd)
 else:
-	spawn_daemon(subprocess_qemu)
+	spawn_daemon(subprocess_fix_smb)
+	subprocess_qemu().wait()
