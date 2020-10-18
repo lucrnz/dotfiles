@@ -28,11 +28,28 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
-# Shared folders needs samba and gawk:
-# Debian/Ubuntu: sudo apt install samba gawk
-
+# Shared folders: Needs smbd and gawk
 import os, sys, errno, socket, subprocess
+from enum import Enum
+
+# Mini error handling lib:
+class InfoMsgType(Enum):
+	im_error = 0
+	im_warning = 1
+	im_info = 2
+
+class InfoMsg:
+	def __init__(self, msg_txt, msg_type = InfoMsgType.im_error):
+		self.msg_txt = msg_txt
+		self.msg_type = msg_type
+
+class ReturnCode:
+	def __init__(self, ok=True, msg=None): #op_success = Boolean, infomsg = InfoMsg class.
+		self.ok = ok
+		self.msg = msg
+	def set_error(err_msg):
+		self.ok = False
+		self.msg = err_msg
 
 #My replacement for configobj, fuck that shit.
 def load_cfg(filepath, defaults=None): # defaults must be a dictionary..
@@ -55,8 +72,7 @@ def get_disk_format(file_path):
 			result = s
 			break
 		else:
-			if s == 'format:':
-				prev_was_fmt = True
+			prev_was_fmt = True if s == 'format:'
 	return result
 
 def spawn_daemon(func):
@@ -100,170 +116,196 @@ def get_usable_port():
 	sock.close()
 	return port
 
-# Use environment variable to find where the VM is
-vm_name = ''
-vm_dir = ''
-if len(sys.argv) == 1: # No args.
-	print('Warning: No arguments, assuming the VM is in CWD.', file=sys.stderr)
-	vm_dir = os.getcwd()
-else:   # Normal lookup using ENV var
-	try:
-		vm_dir_env = os.environ["QEMURUN_VM_PATH"].split(":")
-	except:
-		print("Cannot find environment variable QEMURUN_VM_PATH.\nPython error \#%d (%s)" % (e.errno, e.strerror), file=sys.stderr)
-	vm_name = sys.argv[1]
-	for p in vm_dir_env:
-		vm_dir = '{}/{}'.format(p, vm_name)
-		if os.path.exists(vm_dir):
-			break
-	if not os.path.exists(vm_dir):
-		print('Cannot find VM: {}, Check your VM_PATH env. variable ?.'.format(vm_dir), file=sys.stderr)
-		sys.exit(1)
+def program_find_vm_location():
+	# return values=
+	rc = ReturnCode()
+	vm_name = ''
+	vm_dir = ''
+	# Use environment variable to find where the VM is
+	if len(sys.argv) == 1: # No args.
+		rc.set_error(InfoMsg('Warning: No arguments, assuming the VM is in CWD.', InfoMsgType.im_warning))
+		vm_dir = os.getcwd()
+	else:   # Normal lookup using ENV var
+		try:
+			vm_dir_env = os.environ["QEMURUN_VM_PATH"].split(":")
+		except:
+			rc.set_error(InfoMsg("Cannot find environment variable QEMURUN_VM_PATH.\nPython error \#%d (%s)" % (e.errno, e.strerror)))
+		vm_name = sys.argv[1]
+		for p in vm_dir_env:
+			vm_dir = '{}/{}'.format(p, vm_name)
+			if os.path.exists(vm_dir):
+				break
+		if not os.path.exists(vm_dir):
+			rc.set_error(InfoMsg('Cannot find VM: {}, Check your VM_PATH env. variable ?.'.format(vm_dir)))
+	return rc, vm_name, vm_dir
 
-cfg = {}
-cfg["System"] = 'x64'
-cfg['UseUefi'] = 'No'
-cfg['CpuType'] = 'host'
-cfg['CpuCores'] = subprocess.check_output(['nproc']).decode(sys.stdout.encoding).strip()
-cfg['MemorySize'] = '2G'
-cfg['Acceleration'] = 'Yes'
-cfg['DisplayDriver'] = 'virtio'
-cfg['SoundDriver'] = 'hda'
-cfg['Boot'] = 'c'
-cfg['FwdPorts'] = ''
-cfg['HardDiskVirtio'] = 'Yes'
-cfg['SharedFolder'] = 'shared'
-cfg['NetworkDriver'] = 'virtio-net-pci'
-cfg['RngDevice'] = 'Yes'
-cfg['HostVideoAcceleration'] = 'No'
-cfg['LocalTime'] = 'No'
-cfg['Headless'] = 'No'
-cfg['MonitorPort'] = 5510
-cfg['CDRomISO'] = '{}/cdrom'.format(vm_dir) if os.path.isfile('{}/cdrom'.format(vm_dir)) else 'No'
-cfg['HardDisk'] = '{}/disk'.format(vm_dir) if os.path.isfile('{}/disk'.format(vm_dir)) else 'No'
+def program_get_cfg_values(vm_dir):
+	rc = ReturnCode()
 
-if os.path.exists('{}/{}'.format(vm_dir, cfg['SharedFolder'])):
-	cfg['SharedFolder'] = '{}/{}'.format(vm_dir, cfg['SharedFolder'])
+	cfg = {}
+	cfg['System'] = 'x64'
+	cfg['UseUefi'] = 'No'
+	cfg['CpuType'] = 'host'
+	cfg['CpuCores'] = subprocess.check_output(['nproc']).decode(sys.stdout.encoding).strip()
+	cfg['MemorySize'] = '2G'
+	cfg['Acceleration'] = 'Yes'
+	cfg['DisplayDriver'] = 'virtio'
+	cfg['SoundDriver'] = 'hda'
+	cfg['Boot'] = 'c'
+	cfg['FwdPorts'] = ''
+	cfg['HardDiskVirtio'] = 'Yes'
+	cfg['SharedFolder'] = 'shared'
+	cfg['NetworkDriver'] = 'virtio-net-pci'
+	cfg['RngDevice'] = 'Yes'
+	cfg['HostVideoAcceleration'] = 'No'
+	cfg['LocalTime'] = 'No'
+	cfg['Headless'] = 'No'
+	cfg['MonitorPort'] = 5510
+	cfg['CDRomISO'] = '{}/cdrom'.format(vm_dir) if os.path.isfile('{}/cdrom'.format(vm_dir)) else 'No'
+	cfg['HardDisk'] = '{}/disk'.format(vm_dir) if os.path.isfile('{}/disk'.format(vm_dir)) else 'No'
 
-# Load Config File
-vm_cfg_file_path = '{}/config'.format(vm_dir)
-if os.path.isfile(vm_cfg_file_path):
-	cfg = load_cfg(vm_cfg_file_path, cfg)
-else:
-	print('Cannot find config file.', file=sys.stderr)
-	sys.exit(1)
+	if os.path.exists('{}/{}'.format(vm_dir, cfg['SharedFolder'])):
+		cfg['SharedFolder'] = '{}/{}'.format(vm_dir, cfg['SharedFolder'])
 
-qemu_cmd = []
-qemu_ver = get_qemu_version()
-current_user_id = str(subprocess.check_output(['id','-u'], universal_newlines=True).rstrip())
-
-if cfg['System'] == 'x32':
-	qemu_cmd.append('qemu-system-i386')
-elif cfg['System'] == 'x64':
-	qemu_cmd.append('qemu-system-x86_64')
-
-if cfg['Acceleration'].lower() == 'yes':
-	qemu_cmd.append('--enable-kvm')
-
-if vm_name != '':
-	qemu_cmd += ['-name', vm_name]
-
-if cfg['UseUefi'].lower() == 'yes':
-    qemu_cmd += ['-L', '/usr/share/qemu', '-bios', 'OVMF.fd']
-
-if not (cfg['CpuType'].lower() == 'host' and cfg['Acceleration'].lower() != 'yes'):
-	# Avoiding a non possible config..
-	qemu_cmd += ['-cpu', cfg['CpuType']]
-
-pulseaudio_socket = '/run/pulse/native'
-# pulseaudio_socket = '/run/user/' + current_user_id + '/pulse/native'
-
-qemu_cmd += ['-smp', cfg['CpuCores'],
-			'-m', cfg['MemorySize'],
-			'-boot', 'order=' + cfg['Boot'],
-			'-usb', '-device', 'usb-tablet',
-			'-soundhw', cfg['SoundDriver']]
-
-usable_telnet_port = 0
-
-if cfg['Headless'].lower() == 'yes':
-	usable_telnet_port = get_usable_port()
-	qemu_cmd += ['-monitor', 'telnet:127.0.0.1:{},server,nowait'.format(usable_telnet_port)]
-	qemu_cmd += ['-display', 'none']
-else:
-	qemu_cmd += ['-vga', cfg['DisplayDriver']]
-	if cfg['HostVideoAcceleration'].lower() == 'yes':
-		qemu_cmd += ['-display', 'gtk,gl=on']
+	# Load Config File
+	vm_cfg_file_path = '{}/config'.format(vm_dir)
+	if os.path.isfile(vm_cfg_file_path):
+		cfg = load_cfg(vm_cfg_file_path, cfg)
 	else:
-		qemu_cmd += ['-display', 'gtk,gl=off']
+		rc.set_error(InfoMsg('Cannot find config file.'))
 
-if qemu_ver[0] >= 4:
-    qemu_cmd += ['-audiodev', 'pa,id=pa1,server=' + pulseaudio_socket]
+	return rc, cfg
 
-if cfg['RngDevice'].lower() == 'yes':
-	qemu_cmd += ['-object', 'rng-random,id=rng0,filename=/dev/random', '-device', 'virtio-rng-pci,rng=rng0']
+def program_build_cmd_line(cfg, vm_name, vm_dir):
+	qemu_cmd = []
+	qemu_ver = get_qemu_version()
+	current_user_id = str(subprocess.check_output(['id','-u'], universal_newlines=True).rstrip())
 
-sf_str = ''
-if os.path.exists(cfg['SharedFolder']):
-	sf_str = ',smb=' + cfg['SharedFolder']
+	if cfg['System'] == 'x32':
+		qemu_cmd.append('qemu-system-i386')
+	elif cfg['System'] == 'x64':
+		qemu_cmd.append('qemu-system-x86_64')
 
-fwd_ports_str = ''
-if cfg['FwdPorts'] != '':
-	ports_split = cfg['FwdPorts'].split(',')
-	for pair_str in ports_split:
-		if pair_str.find(':') != -1: # If have FordwardPorts = <HostPort>:<GuestPort>
-			pair = pair_str.split(':')
-			fwd_ports_str += ',hostfwd=tcp::{}-:{},hostfwd=udp::{}-:{}'.format(pair[0], pair[1], pair[0], pair[1]);
-		else:   # Else use the same port for Host and Guest.
-			fwd_ports_str += ',hostfwd=tcp::{}-:{},hostfwd=udp::{}-:{}'.format(pair_str, pair_str, pair_str, pair_str);
+	if cfg['Acceleration'].lower() == 'yes':
+		qemu_cmd.append('--enable-kvm')
 
-qemu_cmd += ['-nic', 'user,model={}{}{}'.format(cfg['NetworkDriver'], sf_str, fwd_ports_str)]
+	if vm_name != '':
+		qemu_cmd += ['-name', vm_name]
 
-drive_index = 0
+	if cfg['UseUefi'].lower() == 'yes':
+		qemu_cmd += ['-L', '/usr/share/qemu', '-bios', 'OVMF.fd']
 
-if os.path.isfile(cfg['HardDisk']):
-	hdd_fmt = get_disk_format(cfg['HardDisk'])
-	hdd_virtio = ''
-	if cfg['HardDiskVirtio'].lower() == 'yes':
-		hdd_virtio = ',if=virtio'
-	qemu_cmd += ['-drive', 'file={},format={}{},index={}'.format(cfg['HardDisk'], hdd_fmt, hdd_virtio, str(drive_index))]
-	drive_index += 1
+	if not (cfg['CpuType'].lower() == 'host' and cfg['Acceleration'].lower() != 'yes'):
+		# Avoiding a non possible config..
+		qemu_cmd += ['-cpu', cfg['CpuType']]
 
-if os.path.isfile(cfg['CDRomISO']):
-	qemu_cmd += ['-drive', 'file={},media=cdrom,index={}'.format(cfg['CDRomISO'], str(drive_index))]
-	drive_index += 1
+	pulseaudio_socket = '/run/pulse/native'
+	# pulseaudio_socket = '/run/user/' + current_user_id + '/pulse/native'
 
-if cfg['LocalTime'] == 'Yes':
-	qemu_cmd += ['-rtc', 'base=localtime']
+	qemu_cmd += ['-smp', cfg['CpuCores'],
+				'-m', cfg['MemorySize'],
+				'-boot', 'order=' + cfg['Boot'],
+				'-usb', '-device', 'usb-tablet',
+				'-soundhw', cfg['SoundDriver']]
 
-# END QEMU CMD Line
+	telnet_port = 0
 
-qemu_env = os.environ.copy()
-qemu_env['SDL_VIDEO_X11_DGAMOUSE'] = '0'
-qemu_env['QEMU_AUDIO_DRV'] = 'pa'
-#qemu_env['QEMU_PA_SERVER'] = pulseaudio_socket
+	if cfg['Headless'].lower() == 'yes':
+		telnet_port = get_usable_port()
+		qemu_cmd += ['-monitor', 'telnet:127.0.0.1:{},server,nowait'.format(telnet_port)]
+		qemu_cmd += ['-display', 'none']
+	else:
+		qemu_cmd += ['-vga', cfg['DisplayDriver']]
+		if cfg['HostVideoAcceleration'].lower() == 'yes':
+			qemu_cmd += ['-display', 'gtk,gl=on']
+		else:
+			qemu_cmd += ['-display', 'gtk,gl=off']
 
-def subprocess_qemu():
+	if qemu_ver[0] >= 4:
+		qemu_cmd += ['-audiodev', 'pa,id=pa1,server=' + pulseaudio_socket]
+
+	if cfg['RngDevice'].lower() == 'yes':
+		qemu_cmd += ['-object', 'rng-random,id=rng0,filename=/dev/random', '-device', 'virtio-rng-pci,rng=rng0']
+
+	sf_str = ''
+	if os.path.exists(cfg['SharedFolder']):
+		sf_str = ',smb=' + cfg['SharedFolder']
+
+	fwd_ports_str = ''
+	if cfg['FwdPorts'] != '':
+		ports_split = cfg['FwdPorts'].split(',')
+		for pair_str in ports_split:
+			if pair_str.find(':') != -1: # If have FordwardPorts = <HostPort>:<GuestPort>
+				pair = pair_str.split(':')
+				fwd_ports_str += ',hostfwd=tcp::{}-:{},hostfwd=udp::{}-:{}'.format(pair[0], pair[1], pair[0], pair[1]);
+			else:   # Else use the same port for Host and Guest.
+				fwd_ports_str += ',hostfwd=tcp::{}-:{},hostfwd=udp::{}-:{}'.format(pair_str, pair_str, pair_str, pair_str);
+
+	qemu_cmd += ['-nic', 'user,model={}{}{}'.format(cfg['NetworkDriver'], sf_str, fwd_ports_str)]
+
+	drive_index = 0
+
+	if os.path.isfile(cfg['HardDisk']):
+		hdd_fmt = get_disk_format(cfg['HardDisk'])
+		hdd_virtio = ''
+		if cfg['HardDiskVirtio'].lower() == 'yes':
+			hdd_virtio = ',if=virtio'
+		qemu_cmd += ['-drive', 'file={},format={}{},index={}'.format(cfg['HardDisk'], hdd_fmt, hdd_virtio, str(drive_index))]
+		drive_index += 1
+
+	if os.path.isfile(cfg['CDRomISO']):
+		qemu_cmd += ['-drive', 'file={},media=cdrom,index={}'.format(cfg['CDRomISO'], str(drive_index))]
+		drive_index += 1
+
+	if cfg['LocalTime'] == 'Yes':
+		qemu_cmd += ['-rtc', 'base=localtime']
+		
+	return qemu_cmd, telnet_port
+
+def program_handle_rc(rc):
+	if rc.ok == False:
+		if rc.msg.msg_type == InfoMsgType.im_error:
+			print(rc.msg)
+			exit()
+		elif rc.msg.msg_type == InfoMsgType.im_warning or rc.msg.msg_type == InfoMsgType.im_info:
+			print(rc.msg)
+
+def program_subprocess_qemu(qemu_cmd, qemu_env, vm_dir, telnet_port=0):
 	sp = subprocess.Popen(qemu_cmd, env=qemu_env, cwd=vm_dir)
 	print('QEMU Running at PID: {}'.format(str(sp.pid)))
-	if usable_telnet_port != 0:
-		print('Telnet monitor port: {}'.format(str(usable_telnet_port)))
+	if telnet_port != 0:
+		print('Telnet monitor port: {}'.format(str(telnet_port)))
 	return sp
 
-def subprocess_fix_smb():
-	if os.path.exists(cfg['SharedFolder']):
-		env_cpy = os.environ.copy()
-		fix_smb_sp = subprocess.Popen(['bash', '/home/lucie/.conf_files/scripts/qemu_fix_smb.sh'], env=env_cpy)
+def program_subprocess_fix_smb():
+	env_cpy = os.environ.copy()
+	return subprocess.Popen(['bash', '/home/lucie/.conf_files/scripts/qemu_fix_smb.sh'], env=env_cpy)
 
-print_cmd = False
+def program_main():
+	fun1_rc, vm_name, vm_dir = program_find_vm_location()
+	program_handle_rc(fun1_rc)
 
-if len(sys.argv) == 3:
-	if sys.argv[2] == '--print-cmd':
-		print_cmd = True
+	fun2_rc, cfg = program_get_cfg_values(vm_dir)
+	program_handle_rc(fun2_rc)
 
-if print_cmd:
-	#print(' '.join(qemu_cmd))
-	print(*qemu_cmd)
-else:
-	spawn_daemon(subprocess_fix_smb)
-	subprocess_qemu().wait()
+	qemu_cmd, telnet_port = program_build_cmd_line(cfg, vm_name, vm_dir)
+
+	qemu_env = os.environ.copy()
+	qemu_env['SDL_VIDEO_X11_DGAMOUSE'] = '0'
+	qemu_env['QEMU_AUDIO_DRV'] = 'pa'
+	#qemu_env['QEMU_PA_SERVER'] = pulseaudio_socket
+
+	print_cmd = False
+	if len(sys.argv) == 3:
+		if sys.argv[2] == '--print-cmd':
+			print_cmd = True
+	if print_cmd:
+		#print(' '.join(qemu_cmd))
+		print(*qemu_cmd)
+	else:
+		if os.path.exists(cfg['SharedFolder']):
+			spawn_daemon(program_subprocess_fix_smb)
+		program_subprocess_qemu(qemu_cmd, qemu_env, vm_dir, telnet_port).wait()
+
+if __name__ == '__main__':
+	program_main()
