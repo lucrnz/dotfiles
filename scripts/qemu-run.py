@@ -28,19 +28,24 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-# Needs configobj
-# ArchLinux: sudo pacman -S python-pip --needed && sudo pip install configobj
-# Debian/Ubuntu: sudo apt install python3-pip -y && sudo pip3 install configobj
-# ===============================================
+
 # Shared folders needs samba and gawk:
 # Debian/Ubuntu: sudo apt install samba gawk
 
-# Start Imports
 import os, sys, errno, socket, subprocess
-from configobj import ConfigObj
-# End Imports
 
-# Start Functions
+#My replacement for configobj, fuck that shit.
+def load_cfg(filepath, defaults=None): # defaults must be a dictionary..
+	result = {}
+	if defaults is not None:
+		result = defaults.copy()
+	with open(filepath, 'r') as fh:
+		for line in fh.readlines():
+			if line.find('=') != -1:
+				sline = line.split('=')
+				result[sline[0].strip()] = sline[1].strip()
+	return result
+
 def get_disk_format(file_path):
 	out = subprocess.check_output(['qemu-img','info', file_path], universal_newlines=True).split()
 	prev_was_fmt = False
@@ -95,8 +100,6 @@ def get_usable_port():
 	sock.close()
 	return port
 
-# End Functions
-
 # Use environment variable to find where the VM is
 vm_name = ''
 vm_dir = ''
@@ -117,7 +120,6 @@ else:   # Normal lookup using ENV var
 		print('Cannot find VM: {}, Check your VM_PATH env. variable ?.'.format(vm_dir), file=sys.stderr)
 		sys.exit(1)
 
-# Start Default config
 cfg = {}
 cfg["System"] = 'x64'
 cfg['UseUefi'] = 'No'
@@ -146,14 +148,11 @@ if os.path.exists('{}/{}'.format(vm_dir, cfg['SharedFolder'])):
 # Load Config File
 vm_cfg_file_path = '{}/config'.format(vm_dir)
 if os.path.isfile(vm_cfg_file_path):
-	vm_cfg_file = ConfigObj(vm_cfg_file_path)
-	for k, v in vm_cfg_file.items():
-		cfg[k] = v
+	cfg = load_cfg(vm_cfg_file_path, cfg)
 else:
 	print('Cannot find config file.', file=sys.stderr)
 	sys.exit(1)
 
-# Start QEMU CMD Line
 qemu_cmd = []
 qemu_ver = get_qemu_version()
 current_user_id = str(subprocess.check_output(['id','-u'], universal_newlines=True).rstrip())
