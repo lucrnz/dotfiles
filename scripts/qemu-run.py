@@ -72,7 +72,7 @@ def get_disk_format(file_path):
 			result = s
 			break
 		else:
-			prev_was_fmt = True if s == 'format:'
+			prev_was_fmt = s == 'format:' 
 	return result
 
 def spawn_daemon(func):
@@ -143,29 +143,29 @@ def program_get_cfg_values(vm_dir):
 	rc = ReturnCode()
 
 	cfg = {}
-	cfg['System'] = 'x64'
-	cfg['UseUefi'] = 'No'
-	cfg['CpuType'] = 'host'
-	cfg['CpuCores'] = subprocess.check_output(['nproc']).decode(sys.stdout.encoding).strip()
-	cfg['MemorySize'] = '2G'
-	cfg['Acceleration'] = 'Yes'
-	cfg['DisplayDriver'] = 'virtio'
-	cfg['SoundDriver'] = 'hda'
-	cfg['Boot'] = 'c'
-	cfg['FwdPorts'] = ''
-	cfg['HardDiskVirtio'] = 'Yes'
-	cfg['SharedFolder'] = 'shared'
-	cfg['NetworkDriver'] = 'virtio-net-pci'
-	cfg['RngDevice'] = 'Yes'
-	cfg['HostVideoAcceleration'] = 'No'
-	cfg['LocalTime'] = 'No'
-	cfg['Headless'] = 'No'
-	cfg['MonitorPort'] = 5510
-	cfg['CDRomISO'] = '{}/cdrom'.format(vm_dir) if os.path.isfile('{}/cdrom'.format(vm_dir)) else 'No'
-	cfg['HardDisk'] = '{}/disk'.format(vm_dir) if os.path.isfile('{}/disk'.format(vm_dir)) else 'No'
+	cfg['sys'] = 'x64'
+	cfg['uefi'] = 'No'
+	cfg['cpu'] = 'host'
+	cfg['cores'] = subprocess.check_output(['nproc']).decode(sys.stdout.encoding).strip()
+	cfg['mem'] = '2G'
+	cfg['acc'] = 'Yes'
+	cfg['vga'] = 'virtio'
+	cfg['snd'] = 'hda'
+	cfg['boot'] = 'c'
+	cfg['fwd_ports'] = ''
+	cfg['hdd_virtio'] = 'Yes'
+	cfg['shared'] = 'shared'
+	cfg['net'] = 'virtio-net-pci'
+	cfg['rng_dev'] = 'Yes'
+	cfg['host_video_acc'] = 'No'
+	cfg['localtime'] = 'No'
+	cfg['headless'] = 'No'
+	cfg['monitor_port'] = 5510
+	cfg['cdrom'] = '{}/cdrom'.format(vm_dir) if os.path.isfile('{}/cdrom'.format(vm_dir)) else 'No'
+	cfg['disk'] = '{}/disk'.format(vm_dir) if os.path.isfile('{}/disk'.format(vm_dir)) else 'No'
 
-	if os.path.exists('{}/{}'.format(vm_dir, cfg['SharedFolder'])):
-		cfg['SharedFolder'] = '{}/{}'.format(vm_dir, cfg['SharedFolder'])
+	if os.path.exists('{}/{}'.format(vm_dir, cfg['shared'])):
+		cfg['shared'] = '{}/{}'.format(vm_dir, cfg['shared'])
 
 	# Load Config File
 	vm_cfg_file_path = '{}/config'.format(vm_dir)
@@ -181,42 +181,42 @@ def program_build_cmd_line(cfg, vm_name, vm_dir):
 	qemu_ver = get_qemu_version()
 	current_user_id = str(subprocess.check_output(['id','-u'], universal_newlines=True).rstrip())
 
-	if cfg['System'] == 'x32':
+	if cfg['sys'] == 'x32':
 		qemu_cmd.append('qemu-system-i386')
-	elif cfg['System'] == 'x64':
+	elif cfg['sys'] == 'x64':
 		qemu_cmd.append('qemu-system-x86_64')
 
-	if cfg['Acceleration'].lower() == 'yes':
+	if cfg['acc'].lower() == 'yes':
 		qemu_cmd.append('--enable-kvm')
 
 	if vm_name != '':
 		qemu_cmd += ['-name', vm_name]
 
-	if cfg['UseUefi'].lower() == 'yes':
+	if cfg['uefi'].lower() == 'yes':
 		qemu_cmd += ['-L', '/usr/share/qemu', '-bios', 'OVMF.fd']
 
-	if not (cfg['CpuType'].lower() == 'host' and cfg['Acceleration'].lower() != 'yes'):
+	if not (cfg['cpu'].lower() == 'host' and cfg['acc'].lower() != 'yes'):
 		# Avoiding a non possible config..
-		qemu_cmd += ['-cpu', cfg['CpuType']]
+		qemu_cmd += ['-cpu', cfg['cpu']]
 
 	pulseaudio_socket = '/run/pulse/native'
 	# pulseaudio_socket = '/run/user/' + current_user_id + '/pulse/native'
 
-	qemu_cmd += ['-smp', cfg['CpuCores'],
-				'-m', cfg['MemorySize'],
-				'-boot', 'order=' + cfg['Boot'],
+	qemu_cmd += ['-smp', cfg['cores'],
+				'-m', cfg['mem'],
+				'-boot', 'order=' + cfg['boot'],
 				'-usb', '-device', 'usb-tablet',
-				'-soundhw', cfg['SoundDriver']]
+				'-soundhw', cfg['snd']]
 
 	telnet_port = 0
 
-	if cfg['Headless'].lower() == 'yes':
+	if cfg['headless'].lower() == 'yes':
 		telnet_port = get_usable_port()
 		qemu_cmd += ['-monitor', 'telnet:127.0.0.1:{},server,nowait'.format(telnet_port)]
 		qemu_cmd += ['-display', 'none']
 	else:
-		qemu_cmd += ['-vga', cfg['DisplayDriver']]
-		if cfg['HostVideoAcceleration'].lower() == 'yes':
+		qemu_cmd += ['-vga', cfg['vga']]
+		if cfg['host_video_acc'].lower() == 'yes':
 			qemu_cmd += ['-display', 'gtk,gl=on']
 		else:
 			qemu_cmd += ['-display', 'gtk,gl=off']
@@ -224,16 +224,16 @@ def program_build_cmd_line(cfg, vm_name, vm_dir):
 	if qemu_ver[0] >= 4:
 		qemu_cmd += ['-audiodev', 'pa,id=pa1,server=' + pulseaudio_socket]
 
-	if cfg['RngDevice'].lower() == 'yes':
+	if cfg['rng_dev'].lower() == 'yes':
 		qemu_cmd += ['-object', 'rng-random,id=rng0,filename=/dev/random', '-device', 'virtio-rng-pci,rng=rng0']
 
 	sf_str = ''
-	if os.path.exists(cfg['SharedFolder']):
-		sf_str = ',smb=' + cfg['SharedFolder']
+	if os.path.exists(cfg['shared']):
+		sf_str = ',smb=' + cfg['shared']
 
 	fwd_ports_str = ''
-	if cfg['FwdPorts'] != '':
-		ports_split = cfg['FwdPorts'].split(',')
+	if cfg['fwd_ports'] != '':
+		ports_split = cfg['fwd_ports'].split(',')
 		for pair_str in ports_split:
 			if pair_str.find(':') != -1: # If have FordwardPorts = <HostPort>:<GuestPort>
 				pair = pair_str.split(':')
@@ -241,23 +241,23 @@ def program_build_cmd_line(cfg, vm_name, vm_dir):
 			else:   # Else use the same port for Host and Guest.
 				fwd_ports_str += ',hostfwd=tcp::{}-:{},hostfwd=udp::{}-:{}'.format(pair_str, pair_str, pair_str, pair_str);
 
-	qemu_cmd += ['-nic', 'user,model={}{}{}'.format(cfg['NetworkDriver'], sf_str, fwd_ports_str)]
+	qemu_cmd += ['-nic', 'user,model={}{}{}'.format(cfg['net'], sf_str, fwd_ports_str)]
 
 	drive_index = 0
 
-	if os.path.isfile(cfg['HardDisk']):
-		hdd_fmt = get_disk_format(cfg['HardDisk'])
+	if os.path.isfile(cfg['disk']):
+		hdd_fmt = get_disk_format(cfg['disk'])
 		hdd_virtio = ''
-		if cfg['HardDiskVirtio'].lower() == 'yes':
+		if cfg['hdd_virtio'].lower() == 'yes':
 			hdd_virtio = ',if=virtio'
-		qemu_cmd += ['-drive', 'file={},format={}{},index={}'.format(cfg['HardDisk'], hdd_fmt, hdd_virtio, str(drive_index))]
+		qemu_cmd += ['-drive', 'file={},format={}{},index={}'.format(cfg['disk'], hdd_fmt, hdd_virtio, str(drive_index))]
 		drive_index += 1
 
-	if os.path.isfile(cfg['CDRomISO']):
-		qemu_cmd += ['-drive', 'file={},media=cdrom,index={}'.format(cfg['CDRomISO'], str(drive_index))]
+	if os.path.isfile(cfg['cdrom']):
+		qemu_cmd += ['-drive', 'file={},media=cdrom,index={}'.format(cfg['cdrom'], str(drive_index))]
 		drive_index += 1
 
-	if cfg['LocalTime'] == 'Yes':
+	if cfg['localtime'] == 'Yes':
 		qemu_cmd += ['-rtc', 'base=localtime']
 		
 	return qemu_cmd, telnet_port
@@ -303,7 +303,7 @@ def program_main():
 		#print(' '.join(qemu_cmd))
 		print(*qemu_cmd)
 	else:
-		if os.path.exists(cfg['SharedFolder']):
+		if os.path.exists(cfg['shared']):
 			spawn_daemon(program_subprocess_fix_smb)
 		program_subprocess_qemu(qemu_cmd, qemu_env, vm_dir, telnet_port).wait()
 
