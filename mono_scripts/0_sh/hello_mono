@@ -1,2 +1,0 @@
-#!/bin/sh
-mono "/home/lucie/.conf_files/mono_scripts/1_bin/hello_mono.exe" $@

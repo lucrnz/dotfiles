@@ -13,5 +13,5 @@ __pycache__/
 .Python
 
 # Mono Script System
-mono_scripts/sh/*
-mono_scripts/bin/*
+mono_scripts/0_sh/*
+mono_scripts/1_bin/*
