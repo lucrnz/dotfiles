@@ -7,6 +7,7 @@ export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
+[ -d "$HOME/.conf_files/mono_scripts/0_sh" ] && export PATH="$HOME/.conf_files/mono_scripts/0_sh:$PATH"
 
 if command -v nvim &>/dev/null; then
 	export EDITOR=$(which nvim)

@@ -1,0 +1,17 @@
+# General ignores
+*.bin
+*.exe
+*.dll
+*.so
+*.obj
+*.o
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# Mono Script System
+mono_scripts/sh/*
+mono_scripts/bin/*
