@@ -3,6 +3,7 @@ import os, sys, subprocess
 cc_path = os.environ['HOME'] + '/.conf_files/cc_scripts'
 bin_path = cc_path + '/bin'
 
+print(">Rebuilding CC/C++ scripts")
 print(">Cleaning old binaries")
 
 for item in os.listdir(bin_path):

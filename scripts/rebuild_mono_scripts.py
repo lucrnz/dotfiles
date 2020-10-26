@@ -4,6 +4,7 @@ cs_path = os.environ['HOME'] + '/.conf_files/mono_scripts'
 sh_path = cs_path + '/sh'
 bin_path = cs_path + '/bin'
 
+print(">Rebuilding Mono/C# scripts")
 print(">Cleaning old binaries/shell_scripts")
 
 for item in os.listdir(sh_path):
