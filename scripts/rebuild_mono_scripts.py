@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os, sys, subprocess
 cs_path = os.environ['HOME'] + '/.conf_files/mono_scripts'
-sh_path = cs_path + '/0_sh'
-bin_path = cs_path + '/1_bin'
+sh_path = cs_path + '/sh'
+bin_path = cs_path + '/bin'
 
 print(">Cleaning old binaries/shell_scripts")
 
