@@ -24,7 +24,7 @@ for item in os.listdir(cc_path):
     bin_filepath = bin_path + '/' + file_name
     if os.path.isfile(bin_filepath):
         os.remove(bin_filepath)
-    cc_cmd = ['g++', '-o' + bin_filepath, cc_filepath]
+    cc_cmd = ['g++', '-O2', '-o' + bin_filepath, cc_filepath]
     cc_cwd = cc_path
     cc_env = os.environ.copy()
     subprocess.Popen(cc_cmd, env=cc_env, cwd=cc_cwd).wait()
