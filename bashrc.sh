@@ -7,11 +7,10 @@ export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)
 [ -d /usr/local/go/bin ] && export PATH=$PATH:/usr/local/go/bin
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+[ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
 [ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
 [ -d "$HOME/.conf_files/mono_scripts/sh" ] && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
 [ -d "$HOME/.conf_files/cc_scripts/bin" ] && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
-
-
 
 if command -v nvim &>/dev/null; then
 	export EDITOR=$(which nvim)
