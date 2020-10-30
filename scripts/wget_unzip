@@ -1,0 +1,9 @@
+#!/bin/bash
+
+url="$@"
+file="$(pwd)/$(gen_ucode)"
+
+wget "$url" -O "$file" &&
+unzip "$file" &&
+rm "$file"
+
