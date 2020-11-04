@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+current_datetime="$(date +%Y%m%d_%H%M%S)"
+if [ -f ".gitignore" ]; then
+    git diff --exit-code ".gitignore" >/dev/null 2>&1
+    if [ "$?" == "1" ]; then
+        git add ".gitignore"
+        git commit -m "fast_commit {.gitignore_update} at ${current_datetime}"
+    fi
+fi
+
+git add -A
+git commit -m "fast_commit at ${current_datetime}"
