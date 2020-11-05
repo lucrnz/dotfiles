@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-current_datetime="$(date +%Y%m%d_%H%M%S)"
+current_datetime="$(date_fmt)"
 if [ -f ".gitignore" ]; then
     git diff --exit-code ".gitignore" >/dev/null 2>&1
     if [ "$?" == "1" ]; then
