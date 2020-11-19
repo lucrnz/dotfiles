@@ -83,6 +83,10 @@ fork_muted() {
 	$@ >/dev/null 2>&1 &
 }
 
+_fm() {
+	fork_muted $@
+}
+
 ramdisk() {
 	target="/tmp/ramdisk"
 	if [ -d $target ]; then
@@ -93,9 +97,20 @@ ramdisk() {
 	fi
 }
 
+if command -v dpkg &>/dev/null; then
+	apt_autopurge() {
+		sudo apt-get purge $(dpkg -l | grep '^rc' | awk '{print $2}')
+	}
+fi
+
 
 #if [ "$HOSTNAME" == "dreams" ]; then
 #	if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
 #		startx
 #	fi
 #fi
+
+
+if [ "$HOSTNAME" == "thinkpad" ]; then
+	export LANG="en_US.UTF-8"
+fi
