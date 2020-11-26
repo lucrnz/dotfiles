@@ -44,8 +44,8 @@ if _is_running_in_chroot; then
 	fi
 fi
 
-[ -d "/usr/local/go/bin" ] && export PATH=$PATH:/usr/local/go/bin
-[ -d "/snap/bin/"] && export PATH="/snap/bin/:$PATH"
+[ -d "/usr/local/go/bin" ] && export PATH="$PATH:/usr/local/go/bin"
+[ -d "/snap/bin/" ] && export PATH="/snap/bin/:$PATH"
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
@@ -68,7 +68,7 @@ else
 fi
 
 activate_nvm() {
-	if ! cmd_exists nvm then
+	if ! cmd_exists nvm; then
 		export NVM_DIR="$HOME/.nvm"
 		if [ -d $NVM_DIR ]; then
 			[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
