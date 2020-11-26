@@ -1,9 +1,32 @@
 #!/usr/bin/bash
+# LUCIE'S BASHRC
+# DONT TOUCH IT OR YOU WILL DIE
+#      ,;;*;;;;,
+#     .-'``;-');;.
+#    /'  .-.  /*;;
+#  .'    \d    \;;               .;;;,
+# / o      `    \;    ,__.     ,;*;;;*;,
+# \__, _.__,'   \_.-') __)--.;;;;;*;;;;,
+#  `""`;;;\       /-')_) __)  `\' ';;;;;;
+#     ;*;;;        -') `)_)  |\ |  ;;;;*;
+#     ;;;;|        `---`    O | | ;;*;;;
+#     *;*;\|                 O  / ;;;;;*
+#    ;;;;;/|    .-------\      / ;*;;;;;
+#   ;;;*;/ \    |        '.   (`. ;;;*;;;
+#   ;;;;;'. ;   |          )   \ | ;;;;;;
+#   ,;*;;;;\/   |.        /   /` | ';;;*;
+#    ;;;;;;/    |/       /   /__/   ';;;
+#    '"*"'/     |       /    |      ;*;
+#         `""""`        `""""`     ;'
 [[ $- != *i* ]] && return
 
 _is_running_in_chroot() {
 	awk 'BEGIN{exit_code=1} $2 == "/" {exit_code=0} END{exit exit_code}' /proc/mounts
 	test $? -eq 1
+}
+
+cmd_exists() {
+	command -v $1 &>/dev/null
 }
 
 export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
@@ -21,7 +44,8 @@ if _is_running_in_chroot; then
 	fi
 fi
 
-[ -d /usr/local/go/bin ] && export PATH=$PATH:/usr/local/go/bin
+[ -d "/usr/local/go/bin" ] && export PATH=$PATH:/usr/local/go/bin
+[ -d "/snap/bin/"] && export PATH="/snap/bin/:$PATH"
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
@@ -29,18 +53,22 @@ fi
 [ -d "$HOME/.conf_files/mono_scripts/sh" ] && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
 [ -d "$HOME/.conf_files/cc_scripts/bin" ] && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
 
-if command -v nvim &>/dev/null; then
-	export EDITOR=$(which nvim)
-elif command -v vim &>/dev/null; then
-	export EDITOR=$(which vim)
-elif command -v nano &>/dev/null; then
+if cmd_exists micro; then
+	export EDITOR=$(which micro)
+elif cmd_exists nano; then
 	export EDITOR=$(which nano)
+elif cmd_exists nvim; then
+	export EDITOR=$(which nvim)
+elif cmd_exists vim; then
+	export EDITOR=$(which vim)
+elif cmd_exists vi; then
+	export EDITOR=$(which vi)
 else
 	echo "Bashrc couldnt find an editor. sorry"
 fi
 
 activate_nvm() {
-	if ! command -v nvm &>/dev/null; then
+	if ! cmd_exists nvm then
 		export NVM_DIR="$HOME/.nvm"
 		if [ -d $NVM_DIR ]; then
 			[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -55,7 +83,7 @@ activate_nvm() {
 }
 
 activate_pyenv() {
-	if ! command -v pyenv &>/dev/null; then
+	if ! cmd_exists pyenv; then
 		if [ -d "$HOME/.pyenv/bin" ]; then
 			export PATH="$HOME/.pyenv/bin:$PATH"
 			eval "$(pyenv init -)"
