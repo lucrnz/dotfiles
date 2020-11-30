@@ -1,0 +1,10 @@
+#!/bin/bash
+script_url="https://gitlab.com/lucie_cupcakes/qemu-run/-/raw/master/qemu-run.py?inline=false"
+script_fpath="/tmp/$(gen_ucode).py"
+
+wget $script_url -qO $script_fpath
+chmod +x $script_fpath
+
+./$script_fpath $@
+
+rm $script_fpath
