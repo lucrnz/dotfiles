@@ -1,0 +1,21 @@
+#!/bin/bash
+rm_ie(){
+    if [ -f "$@" ]; then
+        rm "$@"
+    fi
+}
+
+ucode=$(gen_ucode)
+a_file="/tmp/ytdlhd_audio_${ucode}.webm"
+v_file="/tmp/ytdlhd_video_${ucode}.webm"
+url="$@"
+title=$(youtube-dl -e $url)
+fmt=$(youtube-dl -F "$url" | grep webm)
+a_fmt=$(echo "$fmt" | grep opus | tail -n1 | cut -f1 -d" ")
+v_fmt=$(echo "$fmt" | grep vp9 | tail -n1 | cut -f1 -d" ")
+
+youtube-dl -f "$v_fmt" "$url" -o "$v_file" && \
+youtube-dl -f "$a_fmt" "$url" -o "$a_file" && \
+ffmpeg -i "$v_file" -i "$a_file" -acodec copy -vcodec copy "$(pwd)/${title}.mkv"
+
+rm_ie "$a_file"; rm_ie "$v_file";
