@@ -142,3 +142,12 @@ fi
 if [ "$HOSTNAME" == "thinkpad" ]; then
 	export LANG="en_US.UTF-8"
 fi
+
+if grep -q "microsoft" /proc/version &>/dev/null; then #WSL2 bullshit
+	export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0.0
+	export PULSE_SERVER=tcp:$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}')
+	export DISTRO_DNS=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}')
+	export LIBGL_ALWAYS_INDIRECT=1
+
+	alias rat-panel="xfsettingsd --sm-client-disable && xfce4-panel --sm-client-disable --disable-wm-check"
+fi
