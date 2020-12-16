@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # LUCIE'S BASHRC
 # DONT TOUCH IT OR YOU WILL DIE
 #      ,;;*;;;;,
@@ -29,7 +29,7 @@ cmd_exists() {
 	command -v $1 &>/dev/null
 }
 
-export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
+export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\n% \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
 if _is_running_in_chroot; then
@@ -111,9 +111,7 @@ fork_muted() {
 	$@ >/dev/null 2>&1 &
 }
 
-_fm() {
-	fork_muted $@
-}
+alias _fm="fork_muted"
 
 ramdisk() {
 	target="/tmp/ramdisk"
