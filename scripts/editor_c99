@@ -1,12 +1,13 @@
 #!/bin/bash
 CC=$(which gcc)
 CFLAGS="-O2 -s -pipe -fno-plt -mtune=generic -fsanitize=address,leak"
-CSTD="-std=c99 -pedantic -Wall -Werror -Wextra"
+CSTD="-std=c99 -pedantic"
 leave=0
 ucode=$(gen_ucode)
 tmp_file_source="/tmp/${ucode}.c"
 tmp_file_bin="/tmp/${ucode}.bin"
 
+echo '#include <stdio.h>' >> $tmp_file_source
 echo '#include <stdlib.h>' >> $tmp_file_source
 echo '#include <stdint.h>' >> $tmp_file_source
 echo '#include <stdbool.h>' >> $tmp_file_source
