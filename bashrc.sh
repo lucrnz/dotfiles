@@ -91,6 +91,9 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 
+alias gcc_flags_debug='gcc -g -O0 -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
+alias gcc_flags='gcc -O2 -s -pipe -fno-plt -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
+
 xz_full_autism() {
 	xz -z -9 -e -T $(nproc) -v -v -v -k $@
 }
@@ -117,23 +120,7 @@ if command -v dpkg &>/dev/null; then
 	}
 fi
 
-
-#if [ "$HOSTNAME" == "dreams" ]; then
-#	if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
-#		startx
-#	fi
-#fi
-
-
 if [ "$HOSTNAME" == "thinkpad" ]; then
 	export LANG="en_US.UTF-8"
 fi
 
-if grep -q "microsoft" /proc/version &>/dev/null; then #WSL2 bullshit
-	export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0.0
-	export PULSE_SERVER=tcp:$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}')
-	export DISTRO_DNS=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}')
-	export LIBGL_ALWAYS_INDIRECT=1
-
-	alias rat-panel="xfsettingsd --sm-client-disable && xfce4-panel --sm-client-disable --disable-wm-check"
-fi
