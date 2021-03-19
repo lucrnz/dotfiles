@@ -53,19 +53,7 @@ fi
 [ -d "$HOME/.conf_files/mono_scripts/sh" ] && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
 [ -d "$HOME/.conf_files/cc_scripts/bin" ] && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
 
-if cmd_exists micro; then
-	export EDITOR=$(which micro)
-elif cmd_exists nano; then
-	export EDITOR=$(which nano)
-elif cmd_exists nvim; then
-	export EDITOR=$(which nvim)
-elif cmd_exists vim; then
-	export EDITOR=$(which vim)
-elif cmd_exists vi; then
-	export EDITOR=$(which vi)
-else
-	echo "Bashrc couldnt find an editor. sorry"
-fi
+export EDITOR=nano
 
 activate_nvm() {
 	if ! cmd_exists nvm; then

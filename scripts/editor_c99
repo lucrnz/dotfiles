@@ -1,21 +1,20 @@
 #!/bin/bash
 CC=$(which gcc)
-CFLAGS="-O2 -march=native -mtune=native -s"
-CSTD="-std=c99 -pedantic -Werror"
+CFLAGS="-O2 -s -pipe -fno-plt -mtune=generic -fsanitize=address,leak"
+CSTD="-std=c99 -pedantic -Wall -Werror -Wextra"
 leave=0
 ucode=$(gen_ucode)
 tmp_file_source="/tmp/${ucode}.c"
 tmp_file_bin="/tmp/${ucode}.bin"
 
-
-echo 'include <stdlib.h>' >> $tmp_file_source
-echo 'include <stdint.h>' >> $tmp_file_source
-echo 'include <string.h>' >> $tmp_file_source
-echo >> $tmp_file_source
-echo 'int main(int argc, char** argv) {'>> $tmp_file_source
-echo "\t" >> $tmp_file_source
+echo '#include <stdlib.h>' >> $tmp_file_source
+echo '#include <stdint.h>' >> $tmp_file_source
+echo '#include <stdbool.h>' >> $tmp_file_source
+echo '#include <string.h>' >> $tmp_file_source
+echo 'int main(int argc, char **argv) {'>> $tmp_file_source
+echo -e '\t' >> $tmp_file_source
+echo -e '\treturn 0;' >> $tmp_file_source
 echo '}'>> $tmp_file_source
-
 
 while [ "$leave" == "0" ]; do
 	$EDITOR $tmp_file_source
