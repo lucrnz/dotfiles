@@ -44,6 +44,7 @@ if _is_running_in_chroot; then
 	fi
 fi
 
+[ -d "/usr/bin/watcom/binl" ] && export PATH="$PATH:/usr/bin/watcom/binl"
 [ -d "/usr/local/go/bin" ] && export PATH="$PATH:/usr/local/go/bin"
 [ -d "/snap/bin/" ] && export PATH="/snap/bin/:$PATH"
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
@@ -86,13 +87,14 @@ activate_pyenv() {
 }
 
 export QEMURUN_VM_PATH="$HOME/VM"
+
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 
-alias gcc_flags_debug='gcc -g -O0 -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
-alias gcc_flags='gcc -O2 -s -pipe -fno-plt -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
+alias gcc_flags_debug='gcc -g -O0 -D DEBUG -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
+alias gcc_flags='gcc -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
 
 xz_full_autism() {
 	xz -z -9 -e -T $(nproc) -v -v -v -k $@

@@ -1,3 +1,5 @@
 [user]
 	email = lucie_linux@protonmail.com
 	name = Lucie Cupcakes
+[init]
+	defaultBranch = main
