@@ -20,30 +20,12 @@
 #         `""""`        `""""`     ;'
 [[ $- != *i* ]] && return
 
-_is_running_in_chroot() {
-	awk 'BEGIN{exit_code=1} $2 == "/" {exit_code=0} END{exit exit_code}' /proc/mounts
-	test $? -eq 1
-}
-
-cmd_exists() {
-	command -v $1 &>/dev/null
-}
+cmd_exists() { command -v $1 &>/dev/null ; }
 
 export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\n% \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
-if _is_running_in_chroot; then
-	if [ -f "/etc/os-release" ]; then
-		distro_name=$(cat /etc/os-release | grep ID | head -1)
-		distro_name_ar=(${distro_name//=/ })
-		export PS1="\[\033[38;5;172m\]${distro_name_ar[1]}\[$(tput sgr0)\] $PS1"
-		unset distro_name
-		unset distro_name_ar
-	else
-		export PS1="\[\033[38;5;172m\]chroot\[$(tput sgr0)\] $PS1"
-	fi
-fi
-
+[ -d "/usr/bin/watcom/binl" ] && export PATH="$PATH:/usr/bin/watcom/binl"
 [ -d "/usr/local/go/bin" ] && export PATH="$PATH:/usr/local/go/bin"
 [ -d "/snap/bin/" ] && export PATH="/snap/bin/:$PATH"
 [ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
@@ -53,67 +35,18 @@ fi
 [ -d "$HOME/.conf_files/mono_scripts/sh" ] && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
 [ -d "$HOME/.conf_files/cc_scripts/bin" ] && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
 
-if cmd_exists micro; then
-	export EDITOR=$(which micro)
-elif cmd_exists nano; then
-	export EDITOR=$(which nano)
-elif cmd_exists nvim; then
-	export EDITOR=$(which nvim)
-elif cmd_exists vim; then
-	export EDITOR=$(which vim)
-elif cmd_exists vi; then
-	export EDITOR=$(which vi)
-else
-	echo "Bashrc couldnt find an editor. sorry"
-fi
-
-activate_nvm() {
-	if ! cmd_exists nvm; then
-		export NVM_DIR="$HOME/.nvm"
-		if [ -d $NVM_DIR ]; then
-			[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-			[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-			echo 'nvm activated'
-		else
-			echo 'nvm not found/not installed.'
-		fi
-	else
-		echo 'nvm already activated'
-	fi
-}
-
-activate_pyenv() {
-	if ! cmd_exists pyenv; then
-		if [ -d "$HOME/.pyenv/bin" ]; then
-			export PATH="$HOME/.pyenv/bin:$PATH"
-			eval "$(pyenv init -)"
-			eval "$(pyenv virtualenv-init -)"
-			echo 'pyenv activated'
-		else
-			echo 'pyenv not found/not installed.'
-		fi
-	else
-		echo 'pyenv already activated'
-	fi
-}
-
+export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
-export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export CC=gcc
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie_ow --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 
-alias gcc_flags_debug='gcc -g -O0 -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
-alias gcc_flags='gcc -O2 -s -pipe -fno-plt -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
+alias cc_flags_debug='$CC -g -O0 -D DEBUG -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
+alias cc_flags='$CC -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
 
-xz_full_autism() {
-	xz -z -9 -e -T $(nproc) -v -v -v -k $@
-}
-
-fork_muted() {
-	$@ >/dev/null 2>&1 &
-}
-
+xz_full_autism() { xz -z -9 -e -T $(nproc) -v -v -v -k $@ ; }
+fork_muted() { $@ >/dev/null 2>&1& }
 alias _fm="fork_muted"
 
 ramdisk() {
