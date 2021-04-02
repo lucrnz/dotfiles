@@ -25,19 +25,23 @@ cmd_exists() { command -v $1 &>/dev/null ; }
 export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\n% \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
-[ -d "/usr/bin/watcom/binl" ] && export PATH="$PATH:/usr/bin/watcom/binl"
-[ -d "/usr/local/go/bin" ] && export PATH="$PATH:/usr/local/go/bin"
-[ -d "/snap/bin/" ] && export PATH="/snap/bin/:$PATH"
-[ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
-[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
-[ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
-[ -d "$HOME/.conf_files/scripts" ] && export PATH="$HOME/.conf_files/scripts:$PATH"
-[ -d "$HOME/.conf_files/mono_scripts/sh" ] && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
-[ -d "$HOME/.conf_files/cc_scripts/bin" ] && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
+test -d "/usr/bin/watcom/binl" && export PATH="$PATH:/usr/bin/watcom/binl"
+test -d "/usr/local/go/bin" && export PATH="$PATH:/usr/local/go/bin"
+test -d "/snap/bin/" && export PATH="/snap/bin/:$PATH"
+test -d "$HOME/bin" && export PATH="$HOME/bin:$PATH"
+test -d "$HOME/.local/bin" && export PATH="$HOME/.local/bin:$PATH"
+test -d "$HOME/go/bin" && export PATH="$HOME/go/bin:$PATH"
+test -d "$HOME/.conf_files/scripts" && export PATH="$HOME/.conf_files/scripts:$PATH"
+test -d "$HOME/.conf_files/mono_scripts/sh" && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
+test -d "$HOME/.conf_files/cc_scripts/bin" && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
 
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
 export CC=gcc
+
+if [ "$HOSTNAME" == "dreams" ]; then
+	test -d "/mnt/D_DRIVE/QEMU" && export QEMURUN_VM_PATH="$HOME/VM:/mnt/D_DRIVE/QEMU"
+fi
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
