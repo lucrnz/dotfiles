@@ -18,3 +18,5 @@ mono_scripts/bin/*
 
 # GCC Script System
 cc_scripts/bin/*
+moc/cache/
+moc/pid
