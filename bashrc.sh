@@ -37,7 +37,6 @@ test -d "$HOME/.conf_files/cc_scripts/bin" && export PATH="$HOME/.conf_files/cc_
 
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
-export CC=gcc
 
 if [ "$HOSTNAME" == "dreams" ]; then
 	test -d "/mnt/D_DRIVE/QEMU" && export QEMURUN_VM_PATH="$HOME/VM:/mnt/D_DRIVE/QEMU"
