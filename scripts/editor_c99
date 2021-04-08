@@ -19,8 +19,9 @@ echo '}'>> $tmp_file_source
 
 while [ "$leave" == "0" ]; do
 	$EDITOR $tmp_file_source
+	cat $HOME/.conf_files/clang-format | clang-format -i --style=file $tmp_file_source
 	$CC $CSTD $CFLAGS $tmp_file_source -o $tmp_file_bin && $tmp_file_bin
-	echo "Program returned code $?"
+	echo "\nProgram returned code $?"
 	echo "	1) Edit source ; recompile & run"
 	echo "	2) Copy source to clipboard & leave"
 	echo "	3) Just leave"
