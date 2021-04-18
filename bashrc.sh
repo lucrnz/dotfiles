@@ -34,6 +34,7 @@ test -d "$HOME/go/bin" && export PATH="$HOME/go/bin:$PATH"
 test -d "$HOME/.conf_files/scripts" && export PATH="$HOME/.conf_files/scripts:$PATH"
 test -d "$HOME/.conf_files/mono_scripts/sh" && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
 test -d "$HOME/.conf_files/cc_scripts/bin" && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
+test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
 
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
