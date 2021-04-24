@@ -46,7 +46,6 @@ fi
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
-
 alias cc_flags_debug='$CC -g -O0 -D DEBUG -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
 alias cc_flags='$CC -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
 
@@ -70,6 +69,6 @@ if command -v dpkg &>/dev/null; then
 	}
 fi
 
-if [ "$HOSTNAME" == "thinkpad" ]; then
-	export LANG="en_US.UTF-8"
-fi
+
+[[ "$HOSTNAME" == "thinkpad" ]] && [[ -f "$HOME/.conf_files/bashrc_thinkpad.sh" ]] && \
+	source "$HOME/.conf_files/bashrc_thinkpad.sh"
