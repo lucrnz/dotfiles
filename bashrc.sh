@@ -64,12 +64,17 @@ ramdisk() {
 	fi
 }
 
+find_pendrive() {
+	fd=$(sudo fdisk -l)
+	echo "$fd" | grep 7864320000
+	echo "$fd" | grep 30979129344
+}
+
 if command -v dpkg &>/dev/null; then
 	apt_autopurge() {
 		sudo apt-get purge $(dpkg -l | grep '^rc' | awk '{print $2}')
 	}
 fi
-
 
 [[ "$HOSTNAME" == "thinkpad" ]] && [[ -f "$HOME/.conf_files/bashrc_thinkpad.sh" ]] && \
 	source "$HOME/.conf_files/bashrc_thinkpad.sh"
