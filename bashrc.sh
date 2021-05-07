@@ -36,6 +36,7 @@ test -d "$HOME/.conf_files/mono_scripts/sh" && export PATH="$HOME/.conf_files/mo
 test -d "$HOME/.conf_files/cc_scripts/bin" && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
 test -d "$HOME/.nimble/bin" && export PATH="$HOME/.nimble/bin:$PATH"
 test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
+test -d "$HOME/.pyston" && export PATH="$HOME/.pyston:$PATH"
 
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
