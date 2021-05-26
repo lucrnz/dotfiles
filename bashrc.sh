@@ -41,10 +41,6 @@ test -d "$HOME/.pyston" && export PATH="$HOME/.pyston:$PATH"
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
 
-if [ "$HOSTNAME" == "dreams" ]; then
-	test -d "/mnt/D_DRIVE/QEMU" && export QEMURUN_VM_PATH="$HOME/VM:/mnt/D_DRIVE/QEMU"
-fi
-
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 alias cc_flags_debug='$CC -g -O0 -D DEBUG -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
@@ -76,5 +72,5 @@ if command -v dpkg &>/dev/null; then
 	}
 fi
 
-[[ "$HOSTNAME" == "thinkpad" ]] && [[ -f "$HOME/.conf_files/bashrc_thinkpad.sh" ]] && \
-	source "$HOME/.conf_files/bashrc_thinkpad.sh"
+[[ -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" ]] && \
+	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
