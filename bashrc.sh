@@ -55,8 +55,10 @@ ramdisk() {
 	if [ -d $target ]; then
 		echo "$target already exists??"
 	else
-		mkdir $target
-		sudo mount -t tmpfs -o size=$1 ramdisk_user /tmp/ramdisk
+		uid=$(id -u)
+		gid=$(id -g)
+		mkdir $target &&
+		sudo mount -t tmpfs -o size=$1,uid=${uid},gid=${gid} ramdisk_user /tmp/ramdisk
 	fi
 }
 
