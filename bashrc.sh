@@ -38,6 +38,11 @@ test -d "$HOME/.nimble/bin" && export PATH="$HOME/.nimble/bin:$PATH"
 test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
 test -d "$HOME/.pyston" && export PATH="$HOME/.pyston:$PATH"
 
+if test -d "$HOME/.local/share/dotnet"; then
+	export PATH="$HOME/.local/share/dotnet:$PATH"
+	export DOTNET_ROOT="$HOME/.local/share/dotnet"
+fi
+
 export EDITOR=nano
 export QEMURUN_VM_PATH="$HOME/VM"
 
