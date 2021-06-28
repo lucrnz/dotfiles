@@ -1,0 +1,4 @@
+#!/bin/bash
+fd=$(sudo fdisk -l)
+echo "$fd" | grep 7864320000
+echo "$fd" | grep 30979129344
