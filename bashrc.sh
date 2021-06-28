@@ -21,30 +21,35 @@
 [[ $- != *i* ]] && return
 
 cmd_exists() { command -v $1 &>/dev/null ; }
+prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
 
 export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\n% \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
-test -d "/usr/bin/watcom/binl" && export PATH="$PATH:/usr/bin/watcom/binl"
-test -d "/usr/local/go/bin" && export PATH="$PATH:/usr/local/go/bin"
-test -d "/snap/bin/" && export PATH="/snap/bin/:$PATH"
-test -d "$HOME/bin" && export PATH="$HOME/bin:$PATH"
-test -d "$HOME/.local/bin" && export PATH="$HOME/.local/bin:$PATH"
-test -d "$HOME/go/bin" && export PATH="$HOME/go/bin:$PATH"
-test -d "$HOME/.conf_files/scripts" && export PATH="$HOME/.conf_files/scripts:$PATH"
-test -d "$HOME/.conf_files/mono_scripts/sh" && export PATH="$HOME/.conf_files/mono_scripts/sh:$PATH"
-test -d "$HOME/.conf_files/cc_scripts/bin" && export PATH="$HOME/.conf_files/cc_scripts/bin:$PATH"
-test -d "$HOME/.nimble/bin" && export PATH="$HOME/.nimble/bin:$PATH"
-test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
-test -d "$HOME/.pyston" && export PATH="$HOME/.pyston:$PATH"
+prepend_path "/usr/bin/watcom/binl"
+prepend_path "/usr/local/go/bin"
+prepend_path "/snap/bin"
+prepend_path "/snap/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.local/share/go/bin"
+prepend_path "$HOME/.conf_files/scripts"
+prepend_path "$HOME/.conf_files/mono_scripts/sh"
+prepend_path "$HOME/.conf_files/cc_scripts/bin"
+prepend_path "$HOME/.local/share/nimble/bin"
+prepend_path "$HOME/.local/share/pyston"
 
+test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
 if test -d "$HOME/.local/share/dotnet"; then
 	export PATH="$HOME/.local/share/dotnet:$PATH"
 	export DOTNET_ROOT="$HOME/.local/share/dotnet"
 fi
 
 export EDITOR=nano
-export QEMURUN_VM_PATH="$HOME/VM"
+export VISUAL=less
+
+if cmd_exists "qemu-run"; then
+	test -d "$HOME/VM" && export QEMURUN_VM_PATH="$HOME/VM"
+fi
 
 alias ls='ls --color=auto'
 alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
@@ -73,7 +78,7 @@ find_pendrive() {
 	echo "$fd" | grep 30979129344
 }
 
-if command -v dpkg &>/dev/null; then
+if cmd_exists dpkg; then
 	apt_autopurge() {
 		sudo apt-get purge $(dpkg -l | grep '^rc' | awk '{print $2}')
 	}
