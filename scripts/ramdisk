@@ -1,11 +1,65 @@
 #!/bin/bash
+# Script to create a BTRFS Compressed Ramdisk
+# Usage: sudo ./ramdisk mount <name> <size_in_megabytes> <compress_level (1 to 15)> <uid> <gid>
+#        sudo ./ramdisk umount <name>
 
-target="/tmp/ramdisk"
-if [ -d $target ]; then
-    echo "$target already exists??"
-else
-    uid=$(id -u)
-    gid=$(id -g)
-    mkdir $target &&
-    sudo mount -t tmpfs -o size=$1,uid=${uid},gid=${gid} ramdisk_user /tmp/ramdisk
+cmd_exists() { command -v $1 &>/dev/null ; }
+
+if [ ! "$(id -u)" == "0" ]; then
+    echo "Please run as root"
+    exit
 fi
+
+if ! cmd_exists mkfs.btrfs; then
+    echo "This program needs BTRFS tools installed!"
+fi
+
+action=$1
+fslabel=$2
+target_loopfs_dir="/tmp/ramdisk_${fslabel}"
+target_loopfs="$target_loopfs_dir/fs.img"
+target_final="/media/ramdisk_${fslabel}"
+
+case $action in
+    mount)
+        if [ -d "$target_final" ]; then
+            echo "$target_final already exists??"
+            exit
+        fi
+
+        if [ -d "$target_loopfs_dir" ]; then
+            echo "$target_loopfs_dir already exists??"
+            exit
+        fi
+
+        total_size=$3
+        ram_size=$(expr $total_size - 16)
+        compress_level=$4
+        uid=$5
+        gid=$6
+
+        mkdir -v $target_loopfs_dir && mkdir -v $target_final && \
+        mount -v -t tmpfs -o size="${total_size}M",uid=$uid,gid=$gid ramdisk_user $target_loopfs_dir && \
+        chown -v -R $uid:$gid $target_loopfs_dir && \
+        dd if=/dev/zero of="$target_loopfs" bs=1M count=$ram_size && \
+        mkfs.btrfs -L $fslabel $target_loopfs && \
+        mount -v -o loop,compress-force=zstd:$compress_level $target_loopfs $target_final && \
+        chown -v -R $uid:$gid $target_final && \
+        echo "Enjoy your compressed ramdisk, currently mounted at ${target_final}"
+    ;;
+
+    umount)
+        test -d $target_loopfs_dir && test -d $target_final && test -f "$target_loopfs" && \
+        umount -v $target_final && \
+        rm -v "$target_loopfs" && \
+        umount -v $target_loopfs_dir && \
+        rmdir -v $target_final && \
+        rmdir -v $target_loopfs_dir && \
+        echo "Compressed ramdisk unmounted!"
+    ;;
+
+    *)
+        echo -e "Usage:\tsudo ./ramdisk mount <name> <size_in_megabytes> <compress_level (1 to 15)> <uid> <gid>"
+        echo -e "\tsudo ./ramdisk umount <name>"
+    ;;
+esac
