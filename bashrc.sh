@@ -48,14 +48,25 @@ prepend_path "$HOME/.conf_files/cc_scripts/bin"
 test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 
-export EDITOR=nano
+if cmd_exists "nvim"; then
+    alias nano="nvim"
+    alias vim="nvim"
+    export EDITOR=nvim
+else
+    export EDITOR=nano
+fi
+
+if cmd_exists "git"; then
+    alias gs="git status"
+fi
+
 export VISUAL=less
 
 if cmd_exists "qemu-run"; then
 	test -d "$HOME/VM" && export QEMURUN_VM_PATH="$HOME/VM"
 fi
 
-alias ls='ls --color=auto'
+alias ls='ls -l --color=auto'
 alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
 alias cc_flags_debug='$CC -g -O0 -D DEBUG -mtune=generic -fsanitize=address,leak -std=c99 -pedantic -Wall -Werror -Wextra'
 alias cc_flags='$CC -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror -Wextra'
