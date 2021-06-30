@@ -45,7 +45,6 @@ prepend_path "$HOME/.conf_files/scripts"
 prepend_path "$HOME/.conf_files/mono_scripts/sh"
 prepend_path "$HOME/.conf_files/cc_scripts/bin"
 
-test -d "/usr/lib/go" && export GOROOT=/usr/lib/go:$GOROOT
 test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 
