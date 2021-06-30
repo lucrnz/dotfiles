@@ -45,6 +45,13 @@ prepend_path "$HOME/.conf_files/scripts"
 prepend_path "$HOME/.conf_files/mono_scripts/sh"
 prepend_path "$HOME/.conf_files/cc_scripts/bin"
 
+# Node version manager
+if test -d "$HOME/.config/nvm"; then
+	export NVM_DIR="$HOME/.config/nvm"
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
 test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 
@@ -83,3 +90,4 @@ fi
 
 [[ -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" ]] && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
+
