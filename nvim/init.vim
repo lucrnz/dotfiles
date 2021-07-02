@@ -40,7 +40,7 @@ set updatetime=300
 set signcolumn=yes
 set autochdir
 set mouse=a
-set clipboard=unnamed
+set clipboard+=unnamedplus
 
 nnoremap <c-z> <nop>
 noremap <Up> <NOP>
@@ -76,3 +76,4 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standar
 
 " Theme
 colorscheme palenight
+let g:rainbow_active = 1

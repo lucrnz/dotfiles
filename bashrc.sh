@@ -54,6 +54,7 @@ fi
 
 test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
 test -d "$HOME/go" && export GOPATH="$HOME/go"
+cmd_exists "go" && export GO15VENDOREXPERIMENT=1
 
 if cmd_exists "nvim"; then
     alias nano="nvim"
