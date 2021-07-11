@@ -23,7 +23,7 @@
 cmd_exists() { command -v $1 &>/dev/null ; }
 prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
 
-export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\n% \[$(tput sgr0)\]"
+export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
 #PS1='[\u@\h \W]\$ '
 
 prepend_path "/usr/bin/watcom/binl"
@@ -42,18 +42,17 @@ if test -d "$HOME/.local/share/dotnet"; then
 fi
 
 prepend_path "$HOME/.conf_files/scripts"
-prepend_path "$HOME/.conf_files/mono_scripts/sh"
-prepend_path "$HOME/.conf_files/cc_scripts/bin"
 
 # Node version manager
-if test -d "$HOME/.config/nvm"; then
-	export NVM_DIR="$HOME/.config/nvm"
+if test -d "$HOME/.local/share/nvm"; then
+	export NVM_DIR="$HOME/.local/share/nvm"
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
 test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
 test -d "$HOME/go" && export GOPATH="$HOME/go"
+prepend_path "$HOME/go/bin"
 cmd_exists "go" && export GO15VENDOREXPERIMENT=1
 
 if cmd_exists "nvim"; then
