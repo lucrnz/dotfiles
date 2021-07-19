@@ -12,6 +12,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 " Programming Languages
 Plug 'sheerun/vim-polyglot'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'OmniSharp/omnisharp-vim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 
 " Themes

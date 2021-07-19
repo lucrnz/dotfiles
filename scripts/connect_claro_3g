@@ -1,8 +1,8 @@
 #!/bin/bash
 # Conectar claro usb red.
-
 mmcli -S && \
 mmcli -L && \
 read -p "Modem index> " m && \
 mmcli -m $m --simple-connect="apn=ba.amx,user=ppp@A1plus.at,password=clarogprs999" && \
-nmcli device show
+nmtui
+
