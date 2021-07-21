@@ -4,6 +4,7 @@ Plug 'universal-ctags/ctags'
 Plug 'preservim/tagbar'
 Plug 'luochen1990/rainbow'
 Plug 'vim-syntastic/syntastic'
+Plug 'dense-analysis/ale'
 Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-lion'
 Plug 'ntpeters/vim-better-whitespace'
@@ -78,3 +79,10 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standar
 " Theme
 colorscheme palenight
 let g:rainbow_active = 1
+
+let g:ale_linters = {
+\ 'cs': ['OmniSharp']
+\}
+
+let g:airline#extensions#ale#enabled = 1
+
