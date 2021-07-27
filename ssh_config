@@ -1,4 +1,4 @@
 Host discordlinux
-	HostName discord-linux.com 
+	HostName discord-linux.com
 	Port 2245
-
+	Compression yes
