@@ -27,7 +27,7 @@ export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)
 #PS1='[\u@\h \W]\$ '
 
 prepend_path "/usr/bin/watcom/binl"
-prepend_path "/usr/local/go/bin"
+prepend_path "$HOME/.local/share/go/bin"
 prepend_path "/snap/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.local/share/go/bin"
@@ -50,10 +50,9 @@ if test -d "$HOME/.local/share/nvm"; then
 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
-test -d "/usr/local/go" && export GOROOT=/usr/local/go:$GOROOT
+test -d "$HOME/.local/share/go" && export GOROOT=$HOME/.local/share/go
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 prepend_path "$HOME/go/bin"
-cmd_exists "go" && export GO15VENDOREXPERIMENT=1
 
 if cmd_exists "nvim"; then
     alias nano="nvim"
