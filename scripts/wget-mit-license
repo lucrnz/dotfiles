@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+wget https://raw.githubusercontent.com/lucie-cupcakes/go-http-static-route/main/LICENSE -O LICENSE
+
