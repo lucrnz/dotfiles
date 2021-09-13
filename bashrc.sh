@@ -75,7 +75,7 @@ fi
 if cmd_exists "git"; then
     alias gs="git status"
 		git() {
-			VISUAL=$EDITOR git $@
+			VISUAL=$EDITOR $(which git) $@
 		}
 fi
 
