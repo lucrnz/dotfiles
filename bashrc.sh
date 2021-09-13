@@ -65,8 +65,6 @@ if test -d "$HOME/.pyenv"; then
 fi
 
 if cmd_exists "nvim"; then
-    alias nano="nvim"
-    alias vim="nvim"
     export EDITOR=nvim
 else
     export EDITOR=nano
@@ -74,9 +72,7 @@ fi
 
 if cmd_exists "git"; then
     alias gs="git status"
-		git() {
-			VISUAL=$EDITOR $(which git) $@
-		}
+    alias gm="git add -A && VISUAL=$EDITOR git commit"
 fi
 
 export VISUAL=less
