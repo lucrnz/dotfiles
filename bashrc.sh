@@ -35,6 +35,8 @@ prepend_path "$HOME/.local/share/nimble/bin"
 prepend_path "$HOME/.local/share/pyston"
 
 test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
+
+# Dotnet
 if test -d "$HOME/.local/share/dotnet"; then
 	export PATH="$HOME/.local/share/dotnet:$PATH"
 	export DOTNET_ROOT="$HOME/.local/share/dotnet"
@@ -50,9 +52,17 @@ if test -d "$HOME/.local/share/nvm"; then
 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
+# Go-lang
 test -d "$HOME/.local/share/go" && export GOROOT=$HOME/.local/share/go
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 prepend_path "$HOME/go/bin"
+
+# PyEnv
+if test -d "$HOME/.pyenv"; then
+	export PYENV_ROOT="$HOME/.pyenv"
+	export PATH="$PYENV_ROOT/bin:$PATH"
+	eval "$(pyenv init --path)"
+fi
 
 if cmd_exists "nvim"; then
     alias nano="nvim"
@@ -64,6 +74,9 @@ fi
 
 if cmd_exists "git"; then
     alias gs="git status"
+		git() {
+			VISUAL=$EDITOR git $@
+		}
 fi
 
 export VISUAL=less
