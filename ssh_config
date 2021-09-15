@@ -1,6 +1,6 @@
 Host dl
-	HostName discord-linux.com
-	#Port 2245
+	Hostname ssh.surf
 	Port 9594
-	Compression yes
+	LocalForward 3000 localhost:3000
+	LocalForward 8000 localhost:8000
 
