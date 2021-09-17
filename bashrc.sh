@@ -64,18 +64,16 @@ if test -d "$HOME/.pyenv"; then
 	eval "$(pyenv init --path)"
 fi
 
-if cmd_exists "nvim"; then
-    export EDITOR=nvim
-else
-    export EDITOR=nano
-fi
+cmd_exists "nano" && export EDITOR=nano
+cmd_exists "vim" && export EDITOR=vim
+cmd_exists "nvim" && export EDITOR=nvim
+
+export VISUAL=$EDITOR
 
 if cmd_exists "git"; then
     alias gs="git status"
-    alias gm="git add -A && VISUAL=$EDITOR git commit"
+    alias gm="git add -A && git commit"
 fi
-
-export VISUAL=less
 
 if cmd_exists "qemu-run"; then
 	test -d "$HOME/VM" && export QEMURUN_VM_PATH="$HOME/VM"
