@@ -1,4 +1,3 @@
-
 autocmd BufWritePost *.go !gofmt -w %
 
 nmap <silent> gr <Plug>(coc-references)

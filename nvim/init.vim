@@ -12,6 +12,9 @@ Plug 'ctrlpvim/ctrlp.vim'
 
 " Programming Languages
 Plug 'sheerun/vim-polyglot'
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -86,3 +89,7 @@ let g:ale_linters = {
 
 let g:airline#extensions#ale#enabled = 1
 
+# Coc Extensions
+let g:coc_global_extensions = [
+\ 'coc-tsserver'
+\]
