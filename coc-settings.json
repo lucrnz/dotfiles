@@ -6,6 +6,9 @@
   "diagnostic.checkCurrentLine": true,
   "coc.preferences.formatOnSaveFiletypes": [
     "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
     "html",
     "json",
     "css",
@@ -22,6 +25,10 @@
   },
   "go.goplsOptions": {
     "staticcheck": true
-  }
+  },
+  "eslint.autoFixOnSave": true,
+  "prettier.disableSuccessMessage": true,
+  "eslint.filetypes": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
 }
+
 
