@@ -89,7 +89,7 @@ let g:ale_linters = {
 
 let g:airline#extensions#ale#enabled = 1
 
-# Coc Extensions
+" Coc Extensions
 let g:coc_global_extensions = [
 \ 'coc-tsserver'
 \]
