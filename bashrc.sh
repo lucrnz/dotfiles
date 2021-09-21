@@ -94,6 +94,10 @@ if cmd_exists dpkg; then
 	}
 fi
 
+if cmd_exists doas; then
+	alias sudo='doas'
+fi
+
 [[ -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" ]] && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
 
