@@ -68,8 +68,6 @@ cmd_exists "nano" && export EDITOR=nano
 cmd_exists "vim" && export EDITOR=vim
 cmd_exists "nvim" && export EDITOR=nvim
 
-export VISUAL=$EDITOR
-
 if cmd_exists "git"; then
     alias gs="git status"
     alias gm="git add -A && git commit"
@@ -87,6 +85,7 @@ alias cc_flags='$CC -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror
 xz_full_autism() { xz -z -9 -e -T $(nproc) -v -v -v -k $@ ; }
 fork_muted() { $@ >/dev/null 2>&1& }
 alias _fm="fork_muted"
+cmd_exists pacaur && alias pacaur='VISUAL=less pacaur'
 
 if cmd_exists dpkg; then
 	apt_autopurge() {
