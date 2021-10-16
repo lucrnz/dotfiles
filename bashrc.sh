@@ -20,20 +20,19 @@
 #         `""""`        `""""`     ;'
 [[ $- != *i* ]] && return
 
-cmd_exists() { command -v $1 &>/dev/null ; }
-prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
-fork_muted() { $@ >/dev/null 2>&1& }
-alias _fm="fork_muted"
+_include_all() {
+	if test -d "$1"; then
+		for f in $1/*.sh; do
+			test -r "$f" && source "$f"
+		done
+		unset f
+	fi
+}
 
-export PS1="\[\033[38;5;225m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\] \[$(tput sgr0)\]\[\033[38;5;189m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\] % \[$(tput sgr0)\]"
-#PS1='[\u@\h \W]\$ '
-
-if test -d "$HOME/.conf_files/bashrc.d"; then
-	for f in $HOME/.conf_files/bashrc.d/*.sh; do
-		test -r "$f" && source "$f"
-	done
-	unset f
-fi
+_include_all "$HOME/.conf_files/bashfun.d"
+_include_all "$HOME/.conf_files/bashrc.d"
 
 test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
+
+unset _include_all
