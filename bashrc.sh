@@ -71,6 +71,11 @@ cmd_exists "nvim" && export EDITOR=nvim
 if cmd_exists "git"; then
     alias gs="git status"
     alias gm="git add -A && git commit"
+    _cfg() {
+    	CWD="$(pwd)"
+    	cd "$HOME/.conf_files" && git $@
+    	cd "$CWD"
+    }
 fi
 
 if cmd_exists "qemu-run"; then
