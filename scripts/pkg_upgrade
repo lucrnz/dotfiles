@@ -1,0 +1,32 @@
+#!/bin/bash
+
+cmd_exists() { command -v $1 &>/dev/null ; }
+
+_rootex() {
+  if cmd_exists doas; then
+    doas $@
+  else
+    if cmd_exists sudo; then
+      sudo $@
+    else
+      su -c "$@"
+    fi
+  fi
+}
+
+if cmd_exists pacman; then
+  _rootex pacman -Syu --noconfirm && \
+  _rootex pacman -Sc --noconfirm
+fi
+
+if cmd_exists apt; then
+  _rootex apt update -y && \
+  _rootex apt upgrade -y && \
+  _rootex apt clean -y
+fi
+
+cmd_exists flatpak && \
+  _rootex flatpak update -y
+
+cmd_exists pacaur && \
+  VISUAL=less pacaur -Syu --noconfirm
