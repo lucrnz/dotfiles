@@ -1,7 +1,7 @@
 #!/bin/bash
 cmd_exists() { command -v $1 &>/dev/null ; }
 
-if ! cmd_exists git ;then
+if ! cmd_exists git; then
  echo "You need git for this..." && exit 1
 fi
 
