@@ -21,6 +21,7 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 
 " Themes
 Plug 'drewtempelmeyer/palenight.vim'
+Plug 'tanvirtin/monokai.nvim'
 call plug#end()
 
 set runtimepath+=~/.config/nvim/syntax
@@ -80,7 +81,8 @@ autocmd FileType netrw setl bufhidden=delete
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 
 " Theme
-colorscheme palenight
+colorscheme monokai
+"colorscheme palenight
 let g:rainbow_active = 1
 
 let g:ale_linters = {
