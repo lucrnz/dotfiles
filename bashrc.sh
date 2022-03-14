@@ -36,3 +36,4 @@ test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
 
 unset _include_all
+
