@@ -18,6 +18,7 @@ Plug 'peitalin/vim-jsx-typescript'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
 
 " Themes
 Plug 'drewtempelmeyer/palenight.vim'
