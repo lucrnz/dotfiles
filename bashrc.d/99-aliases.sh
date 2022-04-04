@@ -6,3 +6,4 @@ alias cc_flags='$CC -Os -s -pipe -mtune=generic -std=c99 -pedantic -Wall -Werror
 cmd_exists pacaur && alias pacaur='VISUAL=less pacaur'
 cmd_exists doas && alias sudo='doas'
 
+cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
