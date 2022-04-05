@@ -4,7 +4,7 @@ Description=IPFS Daemon
 [Service]
 Type=simple
 StandardOutput=journal
-ExecStart=/usr/bin/ipfs daemon
+ExecStart=/usr/bin/ipfs daemon --enable-gc
 
 [Install]
 WantedBy=default.target
