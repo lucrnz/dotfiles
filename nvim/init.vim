@@ -22,8 +22,9 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
 
 " Themes
-Plug 'drewtempelmeyer/palenight.vim'
-Plug 'tanvirtin/monokai.nvim'
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+"Plug 'drewtempelmeyer/palenight.vim'
+"Plug 'tanvirtin/monokai.nvim'
 call plug#end()
 
 set runtimepath+=~/.config/nvim/syntax
@@ -83,7 +84,9 @@ autocmd FileType netrw setl bufhidden=delete
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 
 " Theme
-colorscheme monokai
+colorscheme tokyonight
+set background=dark
+"colorscheme monokai
 "colorscheme palenight
 let g:rainbow_active = 1
 
