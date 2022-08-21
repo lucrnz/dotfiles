@@ -1,0 +1,3 @@
+#!/bin/bash
+# usage tmux-k <session_name>
+tmux kill-session -t $0
