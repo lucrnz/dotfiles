@@ -36,3 +36,8 @@ test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
 
 unset _include_all
+
+# pnpm
+export PNPM_HOME="/home/lucien/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
