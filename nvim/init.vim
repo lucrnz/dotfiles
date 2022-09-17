@@ -20,6 +20,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
+Plug 'leafOfTree/vim-svelte-plugin'
 
 " Themes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
