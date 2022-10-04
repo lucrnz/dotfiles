@@ -1,0 +1,18 @@
+Host dl
+	HostName discordlinux-arm
+	User luc
+	Port 2222
+	#HostName ssh.surf
+	#Port 6863
+
+Host d64
+	HostName discordlinux-x64
+	User luc
+	Port 2222
+	#HostName x64.world
+	#Port 6632
+
+Host gitea
+	HostName discordlinux-arm
+	User gitea
+	Port 2222
