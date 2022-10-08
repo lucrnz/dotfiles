@@ -19,8 +19,3 @@ mono_scripts/bin/*
 # GCC Script System
 cc_scripts/bin/*
 
-# MOC
-moc/
-!moc/config
-!moc/themes
-

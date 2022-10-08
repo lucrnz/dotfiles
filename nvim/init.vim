@@ -18,6 +18,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " Themes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
