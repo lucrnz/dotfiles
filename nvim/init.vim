@@ -9,6 +9,7 @@ Plug 'tpope/vim-surround'
 Plug 'tommcdo/vim-lion'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'easymotion/vim-easymotion'
 
 " Programming Languages
 Plug 'sheerun/vim-polyglot'
@@ -95,5 +96,23 @@ let g:airline#extensions#ale#enabled = 1
 
 " Coc Extensions
 let g:coc_global_extensions = [
-\ 'coc-tsserver'
+\ 'coc-tsserver', 'coc-deno', 'coc-rust-analyzer'
 \]
+
+" Vim Easymotion config
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+nmap s <Plug>(easymotion-overwin-f)
+" or
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Turn on case-insensitive feature
+let g:EasyMotion_smartcase = 1
+
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
