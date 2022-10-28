@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 CXXFLAGS="-O2 -march=native -mtune=native"
 
 leave=0

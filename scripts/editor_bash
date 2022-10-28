@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 leave=0
 tmp_file="/tmp/$(gen_ucode).sh"
-echo "#!/bin/bash" > $tmp_file
+echo "#!/usr/bin/env bash" > $tmp_file
 
 while [ "$leave" == "0" ]; do
 	$EDITOR $tmp_file

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 read -r -p "This script will change the permissions of the current folder. You might need sudo. - Are you sure? [y/N] " response
 case "$response" in

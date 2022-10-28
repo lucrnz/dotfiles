@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -z "$1" ]; then
 	scrot '%Y-%m-%d_$wx$h_scrot.png' -e '/home/lucie/bin/shotload $f'

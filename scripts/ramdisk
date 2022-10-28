@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to create a BTRFS Compressed Ramdisk
 # Usage: sudo ./ramdisk mount <name> <size_in_megabytes> <compress_level (1 to 15)> <uid> <gid>
 #        sudo ./ramdisk umount <name>

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 rm_ie(){
     if [ -f "$@" ]; then
         rm "$@"

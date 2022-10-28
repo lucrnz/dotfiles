@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 leave=0
 tmp_file="/tmp/$(gen_ucode).py"
 echo "#!/usr/bin/env python3" > $tmp_file

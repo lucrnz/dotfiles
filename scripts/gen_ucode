@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 time=$(date +%s)
 macs=$(cat /sys/class/net/*/address)
 seed=$(head -c 100 /dev/random | base64)

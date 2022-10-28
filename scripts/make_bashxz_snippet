@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # $1 = file to compress&encode
 code=$(xz -z -e -9 -T 8 -q $1 -k -c | base64 | tr -d '\n')
 cmd="echo -n \"${code}\" | base64 -d | xz -d -k -c -q - > /tmp/myfile"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for f in *webm ; do
 	ffmpeg -i "$f" -acodec copy -vn "${f%webm}opus" && rm -v "$f"

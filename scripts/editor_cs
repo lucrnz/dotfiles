@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 COMPILER=$(which mono-csc)
 leave=0
 ucode=$(gen_ucode)
