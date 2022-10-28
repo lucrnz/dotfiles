@@ -1,10 +1,6 @@
-prepend_path "$HOME/.conf_files/scripts"
-prepend_path "/usr/bin/watcom/binl"
-prepend_path "$HOME/.local/share/go/bin"
-prepend_path "/snap/bin"
 prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.conf_files/scripts"
 prepend_path "$HOME/.local/share/go/bin"
 prepend_path "$HOME/.local/share/nimble/bin"
-prepend_path "$HOME/.local/share/pyston"
+prepend_path "/snap/bin"
 
-test -f "$HOME/.cargo/env" && source "$HOME/.cargo/env"
