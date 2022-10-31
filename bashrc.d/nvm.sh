@@ -1,5 +1,4 @@
-# Node version manager
-# https://github.com/nvm-sh/nvm#installing-and-updating
+# Node version manager - https://github.com/nvm-sh/nvm#installing-and-updating
 # mv $HOME/.nvm $HOME/.local/share/nvm
 # nvm install node
 # nvm use node
