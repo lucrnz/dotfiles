@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Lucie - 20221031 - The idea of this script is to create a similar code like an uuid
+
 time=$(date +%s)
 macs=$(cat /sys/class/net/*/address)
 seed=$(head -c 100 /dev/random | base64)

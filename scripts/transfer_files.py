@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Lucie: 20221031 - I have no idea why I wrote this script in the first place
+
 import os, sys, shutil
 if len(sys.argv) != 3:
     print("Usage: transfer_files.py <extension> <target_path>")

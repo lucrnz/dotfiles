@@ -28,5 +28,5 @@ fi
 cmd_exists flatpak && \
   _rootex flatpak update -y
 
-cmd_exists pacaur && \
-  VISUAL=less pacaur -Syu --noconfirm
+cmd_exists yay && \
+  yay -Syau --noconfirm

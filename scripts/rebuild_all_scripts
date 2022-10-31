@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-rebuild_cc_scripts.py
-rebuild_mono_scripts.py

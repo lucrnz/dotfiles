@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# @TODO: change to dotnet
+
 COMPILER=$(which mono-csc)
 leave=0
 ucode=$(gen_ucode)

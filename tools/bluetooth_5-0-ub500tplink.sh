@@ -1,4 +1,5 @@
 #!/bin/bash
+# Lucie - 20221031 - This script is to downlaod specific firmware for a bluetooth USB controller.
 
 if [ $(id -u) != "0" ]; then
 	echo "You must be root to run this script."

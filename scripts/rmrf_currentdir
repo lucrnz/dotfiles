@@ -16,5 +16,3 @@ rm -rvf $TARGETDIR
 mkdir $TARGETDIR
 cd $TARGETDIR
 
-
-

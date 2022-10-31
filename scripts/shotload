@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]; then
-	scrot '%Y-%m-%d_$wx$h_scrot.png' -e '/home/lucie/bin/shotload $f'
-else
-	mv $1 /media/E_DRIVE/pub_http/
-	echo "http://lucie-ow.duckdns.org:5858/$1" | xsel -b
-fi
+DEST_DIR="luxlibre:/home/luc/srv/files/scrot/"
+URL_PREFIX="https://file.lucdev.net/scrot"
+FILENAME=$(scrot '%Y-%m-%d_$wx$h_scrot.png' -e 'echo $f')
+
+scp ./$FILENAME $DEST_DIR && \
+rm -v ./$FILENAME && \
+echo "${URL_PREFIX}/$FILENAME" | xsel -b
+
+

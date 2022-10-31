@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Lucie - 20221031 - This script is for restarting specific processes related to network.
 
 _res() {
 	for s in $@; do
