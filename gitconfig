@@ -1,5 +1,9 @@
 [user]
-	email = lucie_linux@protonmail.com
-	name = Luc - lucdev.net
+	email = me@lucdev.net
+	name = lucdev
+	signingkey = 3B51DCD6DC00D613
 [init]
 	defaultBranch = main
+[commit]
+	gpgsign = true
+
