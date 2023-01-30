@@ -1,1 +1,1 @@
-source "$HOME/.conf_files/bashrc.sh"
+source "$HOME/.bashrc"
