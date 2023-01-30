@@ -9,4 +9,4 @@
 ##
 
 echo $@ >> $HOME/log.txt
-pwd > $HOME/log.txt
+pwd >> $HOME/log.txt
