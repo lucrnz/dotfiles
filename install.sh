@@ -4,9 +4,15 @@
 # I have no idea if it works fine for a normal environment
 ## ---------------------------------------
 
-## --- 
-# To test I will first just log what is going on..
-##
+if [ "$HOME" == "/home/codespace" ]; then
+    case $(hostname) in codespace*)
+        DF_PATH="$(pwd)"
+        ln -s "$DF_PATH" "$HOME/.conf_files"
+        test -f "$HOME/.bashrc" && rm "$HOME/.bashrc"
+        ln -s "$DF_PATH/.bashrc" "$HOME/.bashrc"
 
-echo $@ >> $HOME/log.txt
-pwd >> $HOME/log.txt
+        test -d "$HOME/.local/share/bin" || mkdir -p "$HOME/.local/share/bin"
+        curl https://github.com/neovim/neovim/releases/download/stable/nvim.appimage -o "$HOME/.local/share/bin/nvim" && \
+        chmod +x "$HOME/.local/share/bin/nvim"
+    esac
+fi
