@@ -10,7 +10,9 @@ if [ "$HOME" == "/home/codespace" ]; then
         ln -s "$DF_PATH" "$HOME/.conf_files"
         test -f "$HOME/.bashrc" && rm "$HOME/.bashrc"
         ln -s "$DF_PATH/bashrc.sh" "$HOME/.bashrc"
-        curl -L https://github.com/neovim/neovim/releases/download/stable/nvim.appimage -o "$HOME/.local/bin/nvim" && \
-        chmod +x "$HOME/.local/bin/nvim"
+        
+        # curl -L https://github.com/neovim/neovim/releases/download/stable/nvim.appimage -o "$HOME/.local/bin/nvim" && \
+        # chmod +x "$HOME/.local/bin/nvim"
+        # App images require fuse :(
     esac
 fi
