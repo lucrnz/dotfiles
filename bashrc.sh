@@ -45,16 +45,19 @@ fi
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env" # ghcup-env
 # ---------------------------------------
 # Go programming language - https://go.dev/dl/
+# mkdir -p "$HOME/.local/share"; curl -L https://go.dev/dl/go1.19.5.linux-amd64.tar.gz | tar -C "$HOME/.local/share" -xf -
 test -d "$HOME/.local/share/go" && export GOROOT=$HOME/.local/share/go
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 test -d "$HOME/go/bin" && prepend_path "$HOME/go/bin"
 # ---------------------------------------
 # Nim programming language - https://nim-lang.org/install_unix.html
+# curl https://nim-lang.org/choosenim/init.sh -sSf | sh
 if test -d "$HOME/.nimble/bin"; then
 	export PATH="$PATH:$HOME/.nimble/bin"
 fi
 # ---------------------------------------
 # Node version manager - https://github.com/nvm-sh/nvm#installing-and-updating
+# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 # mv $HOME/.nvm $HOME/.local/share/nvm
 # nvm install node
 # nvm use node
@@ -76,7 +79,8 @@ if test -d "$HOME/.local/share/pnpm"; then
   export PATH="$PNPM_HOME:$PATH"
 fi
 # ---------------------------------------
-# Rust programming language - https://www.rust-lang.org/tools/install
+# Rust programming language
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 test -f "$HOME/.cargo/env" && . "$HOME/.cargo/env"
 # ---------------------------------------
 test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" && \
