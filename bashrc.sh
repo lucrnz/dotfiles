@@ -45,7 +45,7 @@ fi
 [ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env" # ghcup-env
 # ---------------------------------------
 # Go programming language - https://go.dev/dl/
-# mkdir -p "$HOME/.local/share"; curl -L https://go.dev/dl/go1.19.5.linux-amd64.tar.gz | tar -C "$HOME/.local/share" -xf -
+# mkdir -p "$HOME/.local/share"; curl --tlsv1.2 -L https://go.dev/dl/go1.20.linux-amd64.tar.gz -o - | tar -C $HOME/.local/share -xzvf -
 test -d "$HOME/.local/share/go" && export GOROOT=$HOME/.local/share/go
 test -d "$HOME/go" && export GOPATH="$HOME/go"
 test -d "$HOME/go/bin" && prepend_path "$HOME/go/bin"
