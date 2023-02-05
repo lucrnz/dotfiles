@@ -61,16 +61,11 @@ fi
 # mv $HOME/.nvm $HOME/.local/share/nvm
 # nvm install node
 # nvm use node
-
 if test -d "$HOME/.local/share/nvm"; then
   export NVM_DIR="$HOME/.local/share/nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
-# ---------------------------------------
-alias ls='ls -l --color=auto'
-alias irssi='irssi -n lucie-cupcakes --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
-cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
 # ---------------------------------------
 # pnpm package manager - https://pnpm.io/
 # curl -fsSL https://get.pnpm.io/install.sh | sh -
@@ -82,6 +77,10 @@ fi
 # Rust programming language
 # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 test -f "$HOME/.cargo/env" && . "$HOME/.cargo/env"
+# ---------------------------------------
+alias ls='ls -l --color=auto'
+alias irssi='irssi -n lucrnz --config=$HOME/.config/irssi/irssi.conf --home=$HOME/.config/irssi'
+cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
 # ---------------------------------------
 test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" && \
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
