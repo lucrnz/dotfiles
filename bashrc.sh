@@ -11,6 +11,7 @@ alias _fm="fork_muted"
 prepend_path "/snap/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.conf_files/scripts"
+prepend_path "$HOME/.config/composer/vendor/bin"
 # ---------------------------------------
 if cmd_exists dpkg; then
   apt_autopurge() {
