@@ -5,14 +5,14 @@ ensure_cmd() {
 }
 
 ensure_cmd curl && \
-ensure_cmd xargs && \
-ensure_cmd jq && \
 ensure_cmd xwallpaper
 
 OUTPUT="$HOME/bing_wallpaper"
 API_URL="https://bing.biturl.top/"
 
-curl -fsSL "$API_URL" | \
-jq ".url" | \
-xargs -I {} curl -fsSL "{}" -o "$OUTPUT" && \
+curl -fsSL -G "$API_URL" \
+    -d "resolution=1920" \
+    -d "format=image" \
+    -d "mkt=random" \
+    -o "$OUTPUT" && \
 xwallpaper --zoom "$OUTPUT"
