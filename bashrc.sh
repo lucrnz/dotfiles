@@ -35,11 +35,16 @@ luc_cfg_install_dotnet() {
     echo "Restart your shell to use dotnet"
   fi
 }
+if test -d "$HOME/.dotnet/tools"; then
+  prepend_path "$HOME/.dotnet/tools"
+fi
+
 if test -d "$HOME/.local/share/dotnet"; then
   export PATH="$HOME/.local/share/dotnet:$PATH"
   export DOTNET_ROOT="$HOME/.local/share/dotnet"
   export DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
+
 # ---------------------------------------
 # Deno version manager & Deno packages
 # ---------------------------------------
