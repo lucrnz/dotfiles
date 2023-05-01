@@ -113,7 +113,7 @@ luc_cfg_install_go() {
   else
     tmp_dir="/tmp/$(date_fmt)_go"
     mkdir -p $tmp_dir
-    curl --tlsv1.2 -fsSL -o- https://go.dev/dl/go1.20.linux-amd64.tar.gz | tar -C "$tmp_dir" -xzvf - && \
+    curl --tlsv1.2 -fsSL -o- https://go.dev/dl/go1.20.3.linux-amd64.tar.gz | tar -C "$tmp_dir" -xzvf - && \
     mv "$tmp_dir/go" "$target_dir" && \
     mkdir -p "$HOME/go/bin"
     rm -rf $tmp_dir
