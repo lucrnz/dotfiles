@@ -23,29 +23,6 @@ cmd_exists "nano" && export EDITOR=nano
 cmd_exists "vim" && export EDITOR=vim
 cmd_exists "nvim" && export EDITOR=nvim
 # ---------------------------------------
-# C# .NET SDK
-# ---------------------------------------
-luc_cfg_install_dotnet() {
-  target_dir="$HOME/.local/share/dotnet"
-  if test -d "$target_dir"; then
-    echo "dotnet is already installed"
-  else
-    mkdir -p "$target_dir" && \
-    curl --tlsv1.2 -fsSL -o- https://dot.net/v1/dotnet-install.sh | bash -s -- -c STS --install-dir "$target_dir" && \
-    echo "Restart your shell to use dotnet"
-  fi
-}
-if test -d "$HOME/.dotnet/tools"; then
-  prepend_path "$HOME/.dotnet/tools"
-fi
-
-if test -d "$HOME/.local/share/dotnet"; then
-  export PATH="$HOME/.local/share/dotnet:$PATH"
-  export DOTNET_ROOT="$HOME/.local/share/dotnet"
-  export DOTNET_CLI_TELEMETRY_OPTOUT=1
-fi
-
-# ---------------------------------------
 # Deno version manager & Deno packages
 # ---------------------------------------
 luc_cfg_install_dvm() {
