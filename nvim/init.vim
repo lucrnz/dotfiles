@@ -20,6 +20,7 @@ Plug 'peitalin/vim-jsx-typescript'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'yaegassy/coc-astro', {'do': 'yarn install --frozen-lockfile'}
 
 " Themes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
