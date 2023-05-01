@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 export GPG_TTY=$(tty)
 echo "test" | gpg2 --clearsign
