@@ -1,3 +1,5 @@
+-- run :TSInstall astro
+
 return {
   {
     "neovim/nvim-lspconfig",
