@@ -1,0 +1,4 @@
+#!/bin/sh
+
+curl -o LICENSE https://raw.githubusercontent.com/licenses/license-templates/master/templates/mit.txt
+
