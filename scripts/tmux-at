@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# usage tmux-at <session_name>
+# usage: tmux-at [session_name]
 
-tmux has-session -t $1 >>/dev/null 2>&1
+SESSION_NAME=${1:-$(basename $(pwd))}
 
-if [ "$?" == "0" ]; then
+if tmux has-session -t "$SESSION_NAME" >/dev/null 2>&1; then
 	# session exists
-	tmux attach -t $1
+	tmux attach -t "$SESSION_NAME"
 else
-	#create session
-	tmux new -s $1
+	# create session
+	tmux new -s "$SESSION_NAME"
 fi
