@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+if [ -f .gitignore ]; then
+    read -p "Are you sure you want to proceed? [y/N] " choice
+    case "$choice" in
+        y|Y )
+            echo "Proceeding..."
+            ;;
+        * )
+            echo "Aborting."
+            exit
+            ;;
+    esac
+fi
+
+curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
+
