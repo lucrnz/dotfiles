@@ -1,4 +1,16 @@
 #!/bin/sh
 
-curl -o LICENSE https://raw.githubusercontent.com/licenses/license-templates/master/templates/mit.txt
+if [ -f "LICENSE" ]; then
+	read -p "Are you sure you want to proceed? [y/N] " choice
+	case "$choice" in
+	y | Y)
+		echo "Proceeding..."
+		;;
+	*)
+		echo "Aborting."
+		exit
+		;;
+	esac
+fi
 
+curl -o LICENSE https://raw.githubusercontent.com/licenses/license-templates/master/templates/mit.txt
