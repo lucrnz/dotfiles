@@ -26,6 +26,7 @@ cmd_exists "nvim" && export EDITOR=nvim
 # Deno version manager & Deno packages
 # ---------------------------------------
 luc_cfg_install_dvm() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/dvm"
 	if test -d "$target_dir"; then
 		echo "dvm is already installed"
@@ -84,13 +85,14 @@ luc_cfg_install_haskell() {
 # Go programming language - https://go.dev/dl/
 # ---------------------------------------
 luc_cfg_install_go() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/go"
 	if test -d "$target_dir"; then
 		echo "Go is already installed"
 	else
 		tmp_dir="/tmp/$(date_fmt)_go"
 		mkdir -p $tmp_dir
-		curl --tlsv1.2 -fsSL -o- https://go.dev/dl/go1.20.3.linux-amd64.tar.gz | tar -C "$tmp_dir" -xzvf - &&
+		curl --tlsv1.2 -fsSL -o- https://go.dev/dl/go1.20.4.linux-amd64.tar.gz | tar -C "$tmp_dir" -xzvf - &&
 			mv "$tmp_dir/go" "$target_dir" &&
 			mkdir -p "$HOME/go/bin"
 		rm -rf $tmp_dir
@@ -106,6 +108,7 @@ test -d "$HOME/go/bin" && prepend_path "$HOME/go/bin"
 # Nim programming language - https://nim-lang.org/install_unix.html
 # ---------------------------------------
 luc_cfg_install_nim() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/nimble"
 	if test -d "$target_dir"; then
 		echo "Nim is already installed"
@@ -120,6 +123,7 @@ prepend_path "$HOME/.local/share/nimble/bin"
 # Zig programming language - https://ziglang.org/download/
 # ---------------------------------------
 luc_cfg_install_zig() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/zig"
 	if test -d "$target_dir"; then
 		echo "Zig is already installed"
@@ -136,6 +140,7 @@ prepend_path "$HOME/.local/share/zig"
 # Node version manager - https://github.com/nvm-sh/nvm
 # ---------------------------------------
 luc_cfg_install_nvm() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/nvm"
 	if test -d "$target_dir"; then
 		echo "nvm is already installed"
@@ -167,6 +172,7 @@ fi
 # ---------------------------------------
 
 luc_cfg_install_rust() {
+	mkdir -p "$HOME/.local/share"
 	target_dir="$HOME/.local/share/rustup"
 	if test -d "$target_dir"; then
 		echo "rustup is already installed"
