@@ -190,6 +190,7 @@ alias irssi='irssi -n lucrnz --config=$HOME/.config/irssi/irssi.conf --home=$HOM
 alias gs='git status'
 alias gc='git commit'
 cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
+cmd_exists doas && alias sudo='doas'
 # ---------------------------------------
 test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" &&
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
