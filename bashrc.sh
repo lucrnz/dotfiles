@@ -167,6 +167,20 @@ if test -f "$HOME/.nvm_first_install"; then
 fi
 
 # ---------------------------------------
+# PHP Programming language via phpenv
+# ---------------------------------------
+luc_cfg_install_phpenv() {
+	git clone https://github.com/phpenv/phpenv.git ~/.phpenv && \
+	git clone https://github.com/php-build/php-build.git ~/.phpenv/plugins/php-build
+	echo "Restart your shell to use phpenv"
+}
+
+if test -d "$HOME/.phpenv"; then
+	prepend_path "$HOME/.phpenv/bin"
+	eval "$(phpenv init -)"
+fi
+
+# ---------------------------------------
 # Rust programming language
 # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # ---------------------------------------
