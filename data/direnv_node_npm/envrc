@@ -1,0 +1,10 @@
+use flake
+
+export NPM_CONFIG_PREFIX=$PWD/.npm-packages
+export PATH=$NPM_CONFIG_PREFIX/bin:$PATH
+export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
+
+test -d $NPM_CONFIG_PREFIX/lib/node_modules || mkdir -p $NPM_CONFIG_PREFIX/lib/node_modules
+
+npm install
+
