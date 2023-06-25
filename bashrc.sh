@@ -23,7 +23,9 @@ cmd_exists "nano" && export EDITOR=nano
 cmd_exists "vim" && export EDITOR=vim
 cmd_exists "nvim" && export EDITOR=nvim
 # ---------------------------------------
-cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
+if [ "$TERM_PROGRAM" != "vscode" ]; then
+	cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
+fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
