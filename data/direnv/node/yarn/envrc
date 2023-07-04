@@ -7,5 +7,3 @@ export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
 test -d $NPM_CONFIG_PREFIX/lib/node_modules || mkdir -p $NPM_CONFIG_PREFIX/lib/node_modules
 
 npm -g install yarn@^1
-
-yarn install
