@@ -26,6 +26,13 @@ cmd_exists "nvim" && export EDITOR=nvim
 if [ "$TERM_PROGRAM" != "vscode" ]; then
 	cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
 fi
+
+if [ "$(which npm)" == "/usr/bin/npm" ]; then
+	export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
+	test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
+	prepend_path "$NPM_CONFIG_PREFIX/bin"
+	export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
+fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
