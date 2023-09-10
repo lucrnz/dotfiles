@@ -33,6 +33,11 @@ if [ "$(which npm)" == "/usr/bin/npm" ]; then
 	prepend_path "$NPM_CONFIG_PREFIX/bin"
 	export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
 fi
+
+if [ -d "$HOME/.bun" ]; then
+	export BUN_INSTALL="$HOME/.bun"
+	prepend_path "$BUN_INSTALL/bin"
+fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
