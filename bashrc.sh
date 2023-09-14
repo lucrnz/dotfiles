@@ -27,7 +27,7 @@ if [ "$TERM_PROGRAM" != "vscode" ]; then
 	cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
 fi
 
-if [ "$(which npm)" == "/usr/bin/npm" ]; then
+if [ "$(which npm)" == "/usr/bin/npm" ] || [ "$(which npm)" == "/usr/sbin/npm" ]; then
 	export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
 	test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
 	prepend_path "$NPM_CONFIG_PREFIX/bin"
