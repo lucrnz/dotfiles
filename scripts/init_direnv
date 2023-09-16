@@ -1,43 +1,25 @@
 #!/usr/bin/env sh
 
-USAGE="usage: $0 [node] [npm|yarn|pnpm]"
+DATA_DIR="$HOME/.conf_files/data/direnv/$@"
 
-if [ -z "$1" ]; then
-  echo $USAGE
+if [ ! -d $DATA_DIR ]; then
+  echo "data directory: $DATA_DIR does not exists"
   exit 1
 fi
 
-if [ "$1" != "node" ]; then
-  echo $USAGE
-  exit 1
-fi
-
-if [ "$2" != "npm" ] && [ "$2" != "yarn" ] && [ "$2" != "pnpm" ]; then
-  echo $USAGE
-  exit 1
-fi
-
-SOURCE_DIR="$HOME/.conf_files/data/direnv/$1/$2"
-
-if [ ! -d $SOURCE_DIR ]; then
-  echo "data directory: $SOURCE_DIR does not exists"
-  exit 1
-fi
-
-cp -v ${SOURCE_DIR}/flake.nix flake.nix
-test -f "${SOURCE_DIR}/envrc" && cp -v ${SOURCE_DIR}/envrc .envrc
+cp -v ${DATA_DIR}/flake.nix flake.nix
+test -f "${DATA_DIR}/envrc" && cp -v ${DATA_DIR}/envrc .envrc
 
 if test -d ".git"; then
   echo "Git detected, stagging files"
   git add flake.nix
-  test -f "${SOURCE_DIR}/envrc" && git add .envrc
+  test -f "${DATA_DIR}/envrc" && git add .envrc
 
-  echo "Appening gitignore"
-  if test -f ".gitignore"; then
-    echo >> .gitignore
+  if test -f "${DATA_DIR}/gitignore"; then
+    test -f ".gitignore" && echo >> .gitignore
+    cat ${DATA_DIR}/gitignore >> .gitignore
+    git add .gitignore
   fi
-
-  cat ${SOURCE_DIR}/gitignore >> .gitignore
-
-  git add .gitignore
 fi
+
+direnv allow
