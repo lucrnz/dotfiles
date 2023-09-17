@@ -10,4 +10,6 @@
   programs.direnv.enable = true;
   programs.direnv.enableBashIntegration = true;
   programs.neovim.enable = true;
+  programs.htop.enable = true;
+  programs.tmux.enable = true;
 }
