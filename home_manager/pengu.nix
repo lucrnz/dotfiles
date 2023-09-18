@@ -12,5 +12,5 @@
   programs.neovim.enable = true;
   programs.htop.enable = true;
   programs.tmux.enable = true;
-  home.packages = [ pkgs.nixpkgs-fmt pkgs.asciinema ];
+  home.packages = [ pkgs.nixpkgs-fmt pkgs.asciinema pkgs.yt-dlp ];
 }
