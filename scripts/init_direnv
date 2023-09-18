@@ -8,18 +8,23 @@ if [ ! -d $DATA_DIR ]; then
 fi
 
 cp -v ${DATA_DIR}/flake.nix flake.nix
-test -f "${DATA_DIR}/envrc" && cp -v ${DATA_DIR}/envrc .envrc
+cp -v ${DATA_DIR}/envrc .envrc
 
 if test -d ".git"; then
   echo "Git detected, stagging files"
+  git add .envrc
   git add flake.nix
-  test -f "${DATA_DIR}/envrc" && git add .envrc
+
+  test -f ".gitignore" && echo >> .gitignore
+
+  echo "# nix + direnv" >> .gitignore
+  echo ".direnv" >> .gitiginore
 
   if test -f "${DATA_DIR}/gitignore"; then
-    test -f ".gitignore" && echo >> .gitignore
     cat ${DATA_DIR}/gitignore >> .gitignore
-    git add .gitignore
   fi
+
+  git add .gitignore
 fi
 
 direnv allow
