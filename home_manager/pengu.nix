@@ -18,5 +18,6 @@
     pkgs.yt-dlp
     pkgs.jq
     pkgs.jwt-cli
+    pkgs.bat
   ];
 }
