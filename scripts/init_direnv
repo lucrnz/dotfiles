@@ -2,7 +2,7 @@
 
 DATA_DIR="$HOME/.conf_files/data/direnv/$@"
 
-if [ ! -d $DATA_DIR ]; then
+if [ ! -d "$DATA_DIR" ]; then
   echo "data directory: $DATA_DIR does not exists"
   exit 1
 fi
