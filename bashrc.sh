@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 [[ $- != *i* ]] && return
 # ---------------------------------------
-export PS1="\[\033[38;5;7m\][\A]\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;78m\]\u\[$(tput sgr0)\]@\[$(tput sgr0)\]\[\033[38;5;69m\]\h\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;7m\]>\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;141m\]\w\[$(tput sgr0)\]\n\\$ \[$(tput sgr0)\]"
+export PS1="\h:\w \u\$ "
 # ---------------------------------------
 cmd_exists() { command -v $1 &>/dev/null; }
 prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
