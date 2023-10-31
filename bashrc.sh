@@ -23,12 +23,12 @@ cmd_exists "nano" && export EDITOR=nano
 cmd_exists "vim" && export EDITOR=vim
 cmd_exists "nvim" && export EDITOR=nvim
 # ---------------------------------------
-# if [ "$(which npm)" == "/usr/bin/npm" ] || [ "$(which npm)" == "/usr/sbin/npm" ]; then
-# 	export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
-# 	test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
-# 	prepend_path "$NPM_CONFIG_PREFIX/bin"
-# 	export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
-# fi
+if [ "$(which npm)" == "/usr/bin/npm" ] || [ "$(which npm)" == "/usr/sbin/npm" ]; then
+	export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
+	test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
+	prepend_path "$NPM_CONFIG_PREFIX/bin"
+	export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
+fi
 if [ "$TERM_PROGRAM" != "vscode" ]; then
 	cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
 fi
