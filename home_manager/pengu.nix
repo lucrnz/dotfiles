@@ -19,5 +19,6 @@
     pkgs.jq
     pkgs.jwt-cli
     pkgs.bat
+    pkgs.ffmpeg
   ];
 }
