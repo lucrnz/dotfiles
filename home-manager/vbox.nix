@@ -2,9 +2,9 @@
 
 {
   nix.package = pkgs.nix;
-  home.username = "luc";
-  home.homeDirectory = "/home/luc";
-  home.stateVersion = "23.05";
+  home.username = "lucdev";
+  home.homeDirectory = "/home/lucdev";
+  home.stateVersion = "23.11";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   programs.home-manager.enable = true;
   programs.direnv.enable = true;
@@ -13,12 +13,11 @@
   programs.htop.enable = true;
   programs.tmux.enable = true;
   home.packages = [
+    pkgs.git
     pkgs.nixpkgs-fmt
     pkgs.asciinema
-    pkgs.yt-dlp
     pkgs.jq
     pkgs.jwt-cli
     pkgs.bat
-    pkgs.ffmpeg
   ];
 }
