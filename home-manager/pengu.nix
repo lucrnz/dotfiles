@@ -12,12 +12,19 @@
   programs.neovim.enable = true;
   programs.htop.enable = true;
   programs.tmux.enable = true;
-  home.packages = [
-    pkgs.git
-    pkgs.nixpkgs-fmt
-    pkgs.asciinema
-    pkgs.jq
-    pkgs.jwt-cli
-    pkgs.bat
+  home.packages = with pkgs; [
+    devbox
+    git
+    nixpkgs-fmt
+    asciinema
+    jq
+    jwt-cli
+    bat
+    neofetch
   ];
+  programs.gpg.enable = true;
+  services.gpg-agent = {
+    enable = true;
+    pinentryFlavor = "curses";
+  };
 }

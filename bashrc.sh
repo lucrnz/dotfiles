@@ -32,6 +32,11 @@ fi
 if [ "$TERM_PROGRAM" != "vscode" ]; then
 	cmd_exists "nix" && cmd_exists "direnv" && eval "$(direnv hook bash)"
 fi
+if [ -d "$HOME/.local/share/cli-apps" ]; then
+    for f in "$HOME/.local/share/cli-apps/"*.sh; do
+        source "$f"
+    done
+fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
