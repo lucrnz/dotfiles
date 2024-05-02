@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 [[ $- != *i* ]] && return
 # ---------------------------------------
-export PS1='\[\e[38;5;205m\]\h\[\e[0m\]:\[\e[38;5;105m\]\W\[\e[0m\]\\$ '
-# ---------------------------------------
 cmd_exists() { command -v $1 &>/dev/null; }
 prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
 fork_muted() { $@ >/dev/null 2>&1 & }
 alias _fm="fork_muted"
+# ---------------------------------------
+if cmd_exists starship; then
+	eval "$(starship init bash)"
+else
+	export PS1='\[\e[38;5;205m\]\h\[\e[0m\]:\[\e[38;5;105m\]\W\[\e[0m\]\\$ '
+fi
 # ---------------------------------------
 prepend_path "/snap/bin"
 prepend_path "$HOME/.local/bin"
