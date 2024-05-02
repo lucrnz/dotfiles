@@ -22,7 +22,7 @@ cmd_exists "nano" && export EDITOR=nano
 cmd_exists "vim" && export EDITOR=vim
 cmd_exists "nvim" && export EDITOR=nvim
 # ---------------------------------------
-# node
+# node (local npm packages)
 if [ "$(which npm)" == "/usr/bin/npm" ] || [ "$(which npm)" == "/usr/sbin/npm" ]; then
 	export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
 	test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
@@ -52,11 +52,8 @@ if test -d "$HOME/.local/share/go"; then
 	export GOPATH="$HOME/go"
 	prepend_path "$GOROOT/bin"
 	prepend_path "$GOPATH/bin"
-fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
-cmd_exists ffplay && alias ffplay_audio='ffplay -autoexit -nodisp'
-cmd_exists doas && alias sudo='doas'
 # ---------------------------------------
 test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" &&
 	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
