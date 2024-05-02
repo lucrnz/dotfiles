@@ -52,6 +52,7 @@ if test -d "$HOME/.local/share/go"; then
 	export GOPATH="$HOME/go"
 	prepend_path "$GOROOT/bin"
 	prepend_path "$GOPATH/bin"
+fi
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 # ---------------------------------------
