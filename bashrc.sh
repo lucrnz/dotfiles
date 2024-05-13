@@ -57,6 +57,9 @@ if test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOROOT/bin"
 	prepend_path "$GOPATH/bin"
 fi
+
+# dotnet local packages
+prepend_path "$HOME/.dotnet/tools"
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 # ---------------------------------------
