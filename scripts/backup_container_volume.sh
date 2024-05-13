@@ -1,5 +1,5 @@
 #!/bin/bash
-DISTRO_IMG="quay.io/fedora/fedora-minimal:latest"
+DISTRO_IMG="quay.io/fedora/fedora:latest"
 
 # Check if either podman or docker binary exists
 if command -v podman &> /dev/null; then
