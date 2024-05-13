@@ -11,8 +11,8 @@ else
     exit 1
 fi
 
-# Check if $HOME/docker-backup exists, if not create it
-BACKUP_DIR="$HOME/docker-backup"
+# Check if container backup directory, if not create it
+BACKUP_DIR="$HOME/container-backups"
 if [ ! -d "$BACKUP_DIR" ]; then
     mkdir -p "$BACKUP_DIR"
 fi
