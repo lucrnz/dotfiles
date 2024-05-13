@@ -30,7 +30,7 @@ VOLUME="$2"
 if [ "$ACTION" == "backup" ]; then
     DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
     BACKUP_FILE="${VOLUME}_${DATETIME}.tar.gz"
-    $CONTAINER_RUNTIME run --rm -v "${VOLUME}:/data" -v "${BACKUP_DIR}:/backups" $DISTRO_IMG tar cvzf "/backups/$BACKUP_FILE" /data
+    $CONTAINER_RUNTIME run --rm -v "${VOLUME}:/data:z" -v "${BACKUP_DIR}:/backups" $DISTRO_IMG tar cvzf "/backups/$BACKUP_FILE" /data
 
     echo "Backup of volume '$VOLUME' completed. File saved as: ${BACKUP_DIR}/$BACKUP_FILE"
 
@@ -43,7 +43,7 @@ elif [ "$ACTION" == "restore" ]; then
     fi
 
     echo "Restoring volume '$VOLUME' from backup file: $LATEST_BACKUP"
-    $CONTAINER_RUNTIME run --rm -v "${VOLUME}:/data" -v "${BACKUP_DIR}:/backups" $DISTRO_IMG bash -c "rm -rf /data/{*,.*}; cd /data && tar xvzf /backups/$(basename "$LATEST_BACKUP") --strip 1"
+    $CONTAINER_RUNTIME run --rm -v "${VOLUME}:/data:z" -v "${BACKUP_DIR}:/backups" $DISTRO_IMG bash -c "rm -rf /data/{*,.*}; cd /data && tar xvzf /backups/$(basename "$LATEST_BACKUP") --strip 1"
 
     echo "Restore completed."
 
