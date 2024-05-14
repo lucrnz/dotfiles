@@ -6,15 +6,19 @@ prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
 fork_muted() { $@ >/dev/null 2>&1 & }
 alias _fm="fork_muted"
 # ---------------------------------------
+prepend_path "/snap/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.conf_files/scripts"
+prepend_path "$HOME/.dotnet/tools"
+# ---------------------------------------
+if cmd_exists static-web-server; then
+        alias _http_server="static-web-server -a 0.0.0.0 -p 8000 -z -d ."
+fi
 if cmd_exists starship; then
 	eval "$(starship init bash)"
 else
 	export PS1='\[\e[38;5;205m\]\h\[\e[0m\]:\[\e[38;5;105m\]\W\[\e[0m\]\\$ '
 fi
-# ---------------------------------------
-prepend_path "/snap/bin"
-prepend_path "$HOME/.local/bin"
-prepend_path "$HOME/.conf_files/scripts"
 # ---------------------------------------
 if cmd_exists dpkg; then
 	apt_autopurge() {
@@ -57,9 +61,6 @@ if test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOROOT/bin"
 	prepend_path "$GOPATH/bin"
 fi
-
-# dotnet local packages
-prepend_path "$HOME/.dotnet/tools"
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 # ---------------------------------------
