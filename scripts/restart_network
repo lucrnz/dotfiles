@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Lucie - 20221031 - This script is for restarting specific processes related to network.
+# This script is for restarting specific processes related to network.
 
-_res() {
+_restart_sv() {
 	for s in $@; do
 		sudo systemctl restart $s
 	done
 }
 
-_res dhcpcd@enp5s0 dnscrypt-proxy unbound
+_restart_sv systemd-resolved NetworkManager tailscaled
+
