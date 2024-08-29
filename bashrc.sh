@@ -71,6 +71,13 @@ if test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOROOT/bin"
 	prepend_path "$GOPATH/bin"
 fi
+
+# flyctl
+if test -d "$HOME/.fly"; then
+	export FLYCTL_INSTALL="$HOME/.fly"
+	prepend_path "$FLYCTL_INSTALL/bin"
+fi
+
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 # ---------------------------------------
