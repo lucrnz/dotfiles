@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 DISTRO_IMG="quay.io/fedora/fedora:latest"
 
 # Check if either podman or docker binary exists
