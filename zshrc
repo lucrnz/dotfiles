@@ -1,6 +1,31 @@
-#!/usr/bin/env bash
-[[ $- != *i* ]] && return
-# ---------------------------------------
+setopt histignorealldups sharehistory
+
+HISTSIZE=1000
+SAVEHIST=1000
+HISTFILE=~/.zsh_history
+
+# Use modern completion system
+autoload -Uz compinit
+compinit
+
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' menu select=2
+eval "$(dircolors -b)"
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' menu select=long
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+
 cmd_exists() { command -v $1 &>/dev/null; }
 prepend_path() { test -d "$@" && export PATH="$@:$PATH"; }
 fork_muted() { $@ >/dev/null 2>&1 & }
@@ -11,11 +36,8 @@ prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.conf_files/scripts"
 prepend_path "$HOME/.dotnet/tools"
 # ---------------------------------------
-if cmd_exists static-web-server; then
-        alias _http_server="static-web-server -a 0.0.0.0 -p 8000 -z -d ."
-fi
 if cmd_exists starship; then
-	eval "$(starship init bash)"
+	eval "$(starship init zsh)"
 else
 	export PS1='\[\e[38;5;205m\]\h\[\e[0m\]:\[\e[38;5;105m\]\W\[\e[0m\]\\$ '
 fi
@@ -80,7 +102,3 @@ fi
 
 # ---------------------------------------
 alias ls='ls -l --color=auto'
-# ---------------------------------------
-test -f "$HOME/.conf_files/bashrc_${HOSTNAME}.sh" &&
-	source "$HOME/.conf_files/bashrc_${HOSTNAME}.sh"
-
