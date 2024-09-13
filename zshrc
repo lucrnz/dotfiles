@@ -9,6 +9,14 @@ HISTFILE=~/.zsh_history
 autoload -Uz compinit
 compinit
 
+_sourcefile="/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+test -f "$_sourcefile" && source "$_sourcefile"
+unset _sourcefile
+
+_sourcefile="/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+test -f "$_sourcefile" && source "$_sourcefile"
+unset _sourcefile
+
 # function definitions
 # ---------------------------------------
 cmd_exists() { command -v $1 &>/dev/null; }
