@@ -51,14 +51,14 @@ cmd_exists "nvim" && export EDITOR=nvim
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
-  eval "`fnm env`"
+  eval "$(fnm env)"
 else
-	# if not , try to use the system node with a workaround for having local npm packages on the home directory.
-	if [ "$(which npm)" == "/usr/bin/npm" ] || [ "$(which npm)" == "/usr/sbin/npm" ]; then
+	# if not, try to use the system node with a workaround for having local npm packages on the home directory.
+	if [[ "$(which npm)" == "/usr/bin/npm" || "$(which npm)" == "/usr/sbin/npm" ]]; then
 		export NPM_CONFIG_PREFIX="$HOME/.npm/packages"
 		test -d "$NPM_CONFIG_PREFIX/bin" || mkdir -p "$NPM_CONFIG_PREFIX/bin"
 		prepend_path "$NPM_CONFIG_PREFIX/bin"
-		export NODE_PATH=$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH
+		export NODE_PATH="$NPM_CONFIG_PREFIX/lib/node_modules:$NODE_PATH"
 	fi
 fi
 # end node
