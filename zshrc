@@ -95,5 +95,10 @@ if test -d "$HOME/.fly"; then
 	prepend_path "$FLYCTL_INSTALL/bin"
 fi
 
+# podman
+if cmd_exists podman && cmd_exists docker-compose; then
+	export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+fi
+
 # ---------------------------------------
 alias ls='ls -l --color=auto'
