@@ -9,6 +9,7 @@ HISTFILE=~/.zsh_history
 autoload -Uz compinit
 compinit
 
+# load suggestions from common directories
 _sourcefile="/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 test -f "$_sourcefile" && source "$_sourcefile"
 unset _sourcefile
@@ -16,6 +17,16 @@ unset _sourcefile
 _sourcefile="/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 test -f "$_sourcefile" && source "$_sourcefile"
 unset _sourcefile
+
+## load suggestions from home directory
+_sourcefile="$HOME/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+test -f "$_sourcefile" && source "$_sourcefile"
+unset _sourcefile
+
+_sourcefile="$HOME/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+test -f "$_sourcefile" && source "$_sourcefile"
+unset _sourcefile
+
 
 # function definitions
 # ---------------------------------------
