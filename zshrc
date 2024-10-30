@@ -99,6 +99,9 @@ if test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOPATH/bin"
 fi
 
+# sdkman (kotlin & java)
+test -d "$HOME/.sdkman" && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
 # flyctl
 if test -d "$HOME/.fly"; then
 	export FLYCTL_INSTALL="$HOME/.fly"
