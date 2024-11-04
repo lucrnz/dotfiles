@@ -91,6 +91,12 @@ fi
 # deno
 test -f "$HOME/.deno/env" && source "$HOME/.deno/env"
 
+# bun
+if test -d "$HOME/.bun"; then
+  export BUN_INSTALL="$HOME/.bun"
+  prepend_path "$BUN_INSTALL/bin"
+fi
+
 # go
 if test -d "$HOME/.local/share/go"; then
 	export GOROOT="$HOME/.local/share/go"
@@ -116,5 +122,9 @@ fi
 # Load Angular CLI autocompletion.
 cmd_exists ng && source <(ng completion script)
 
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
 # ---------------------------------------
 alias ls='ls -l --color=auto'
+
