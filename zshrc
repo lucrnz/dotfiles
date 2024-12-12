@@ -8,9 +8,6 @@ HISTFILE=~/.zsh_history
 autoload -Uz compinit
 compinit
 
-# deno completions
-if [[ ":$FPATH:" != *":$HOME/completions:"* ]]; then export FPATH="$HOME/completions:$FPATH"; fi
-
 # load suggestions from common directories
 _sourcefile="/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 test -f "$_sourcefile" && source "$_sourcefile"
@@ -88,15 +85,6 @@ if test -d "$HOME/.local/share/pnpm"; then
 fi
 # pnpm end
 
-# deno
-test -f "$HOME/.deno/env" && source "$HOME/.deno/env"
-
-# bun
-if test -d "$HOME/.bun"; then
-  export BUN_INSTALL="$HOME/.bun"
-  prepend_path "$BUN_INSTALL/bin"
-fi
-
 # go
 if test -d "$HOME/.local/share/go"; then
 	export GOROOT="$HOME/.local/share/go"
@@ -112,9 +100,6 @@ fi
 
 # Load Angular CLI autocompletion.
 cmd_exists ng && source <(ng completion script)
-
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # ---------------------------------------
 alias ls='ls -l --color=auto'
