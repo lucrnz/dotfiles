@@ -105,15 +105,6 @@ if test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOPATH/bin"
 fi
 
-# sdkman (kotlin & java)
-test -d "$HOME/.sdkman" && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-# flyctl
-if test -d "$HOME/.fly"; then
-	export FLYCTL_INSTALL="$HOME/.fly"
-	prepend_path "$FLYCTL_INSTALL/bin"
-fi
-
 # podman
 if cmd_exists podman && cmd_exists docker-compose; then
 	export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
