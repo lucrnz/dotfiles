@@ -62,6 +62,7 @@ FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
   eval "$(fnm env)"
+  fnm use default > /dev/null 2>&1
 else
 	if cmd_exists "node" && cmd_exists "npm"; then
 		# if not, try to use the system node with a workaround for having local npm packages on the home directory.
