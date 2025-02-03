@@ -57,12 +57,12 @@ cmd_exists "nvim" && export EDITOR=nvim
 # ---------------------------------------
 
 # node
-# first try to use fnm
-FNM_PATH="$HOME/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="$FNM_PATH:$PATH"
-  eval "$(fnm env)"
-  fnm use default > /dev/null 2>&1
+# first try to use nvm
+
+export NVM_DIR="$HOME/.nvm"
+if [ -f "$NVM_DIR/nvm.sh" ]; then
+	\. "$NVM_DIR/nvm.sh"
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 else
 	if cmd_exists "node" && cmd_exists "npm"; then
 		# if not, try to use the system node with a workaround for having local npm packages on the home directory.
@@ -101,6 +101,10 @@ fi
 
 # Load Angular CLI autocompletion.
 cmd_exists ng && source <(ng completion script)
+
+# sdkman
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 # ---------------------------------------
 alias ls='ls -l --color=auto'
