@@ -38,6 +38,7 @@ prepend_path "/snap/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.conf_files/scripts"
 prepend_path "$HOME/.dotnet/tools"
+prepend_path "$HOME/.local/share/flutter_sdk"
 # ---------------------------------------
 if cmd_exists starship; then
 	eval "$(starship init zsh)"
@@ -105,7 +106,6 @@ cmd_exists ng && source <(ng completion script)
 # sdkman
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 
