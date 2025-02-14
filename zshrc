@@ -109,3 +109,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 # ---------------------------------------
 alias ls='ls -l --color=auto'
 
+# Host quirks
+_sourcefile="$HOME/.conf_files/host_quirks/$HOSTNAME.sh"
+[[ -f "$_sourcefile" ]] && source "$_sourcefile"
+unset _sourcefile
