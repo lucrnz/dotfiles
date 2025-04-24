@@ -1,6 +1,16 @@
 [user]
 	email = me@lucdev.net
 	name = lucdev
-	signingkey = 3B51DCD6DC00D613
+	signingkey = /home/lucdev/.ssh/id_ed25519.pub
 [init]
 	defaultBranch = main
+[gpg "ssh"]
+	allowedSignersFile = /home/lucdev/.ssh/allowed_signers
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[format]
+	signoff = true
+[gpg]
+	format = ssh
