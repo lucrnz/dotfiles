@@ -125,7 +125,12 @@ if cmd_exists podman && cmd_exists docker-compose; then
 	export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
 fi
 # ----------------------------------------
-
+# sdkman
+if test -d "$HOME/.sdkman"; then
+	export SDKMAN_DIR="$HOME/.sdkman"
+	[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi
+# ----------------------------------------
 # Load Angular CLI autocompletion.
 cmd_exists ng && source <(ng completion script)
 
