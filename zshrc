@@ -87,6 +87,16 @@ if test -d "$HOME/.local/share/pnpm"; then
 fi
 # pnpm end
 
+# bun
+
+# bun
+if test -d "$HOME/.bun"; then
+	export BUN_INSTALL="$HOME/.bun"
+	prepend_path "$BUN_INSTALL/bin"
+	[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+fi
+# bun end
+
 # go
 if test -d "$HOME/.local/share/go"; then
 	export GOROOT="$HOME/.local/share/go"
@@ -113,3 +123,4 @@ alias ls='ls -l --color=auto'
 _sourcefile="$HOME/.conf_files/host_quirks/$HOSTNAME.sh"
 [[ -f "$_sourcefile" ]] && source "$_sourcefile"
 unset _sourcefile
+
