@@ -120,6 +120,9 @@ if ! _brew_provides go && test -d "$HOME/.local/share/go"; then
 	prepend_path "$GOPATH/bin"
 fi
 # -----------------------------------------
+# rust
+test -f "$HOME/.cargo/env" && . "$HOME/.cargo/env"
+# -----------------------------------------
 # podman
 if cmd_exists podman && cmd_exists docker-compose; then
 	export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
